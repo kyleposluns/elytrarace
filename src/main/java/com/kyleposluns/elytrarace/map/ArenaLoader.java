@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.kyleposluns.elytrarace.config.ERConfig;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.kyleposluns.elytrarace.util.ERUtils;
-import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -40,10 +39,6 @@ public class ArenaLoader {
     return activeArenas.stream().anyMatch(arena -> arena.info.getName().equals(name));
   }
 
-  public Optional<Arena> getArena(Player player) {
-    return activeArenas.stream().filter(arena -> arena.containsPlayer(player)).findFirst();
-
-  }
 
   public void createArena(ArenaInfo arenaInfo) throws IOException {
     File arenaDir = new File(arenaRoot, arenaInfo.getName());

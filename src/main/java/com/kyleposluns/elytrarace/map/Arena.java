@@ -26,47 +26,6 @@ public class Arena {
   }
 
 
-  public boolean containsPlayer(Player player) {
-    return this.activePlayers.contains(player.getUniqueId());
-  }
-
-  protected void addToPath(Player player, Location location) {
-    if (this.paths.containsKey(player.getUniqueId())) {
-      this.paths.get(player.getUniqueId()).getPath().add(location);
-    }
-  }
-
-  public void lookupRecord(Consumer<RecordBook> func) {
-    func.accept(this.recordBook);
-  }
-
-  public void lookupInfo(Consumer<ArenaInfo> func) {
-    func.accept(this.info);
-  }
-
-  public void activatePlayer(Player player) {
-    this.activePlayers.add(player.getUniqueId());
-  }
-
-  public void deactivatePlayer(Player player) {
-    this.activePlayers.remove(player.getUniqueId());
-    this.paths.remove(player.getUniqueId());
-  } 
-
-  public void startRun(Player player) {
-    this.paths.put(player.getUniqueId(), new Record());
-  }
-
-  public Record finish(Player player, boolean finished) {
-    Record record = new Record(this.paths.get(player.getUniqueId()), finished);
-    this.recordBook.addRecord(player.getUniqueId(), record);
-    this.paths.remove(player.getUniqueId());
-    return record;
-  }
-
-
-
-
 
 
 

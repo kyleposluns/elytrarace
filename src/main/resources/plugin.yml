@@ -1,0 +1,19 @@
+name: ElytraRace
+author: Kyle Posluns
+version: 1.0.0
+description: Elytra Race hub minigame.
+main: com.kyleposluns.elytrarace.ElytraRace
+commands:
+  createarena:
+    description: Create an arena
+    aliases: [ca, carena]
+    usage: /<command> <[name]|spawn|start|goal|border> <[creator]>
+  race:
+    description: Start a race
+    usage: /<command> <[arena]>
+  exitrace:
+    description: Leave a race.
+    usage: /<command>
+  loadarena:
+    description: Load an arena
+    usage: /<command> [name]

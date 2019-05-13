@@ -8,10 +8,9 @@ import org.bukkit.entity.Player;
 
 public abstract class ArenaCommand implements CommandExecutor {
 
-  protected ArenaLoader arenaLoader;
 
-  public ArenaCommand(ArenaLoader arenaLoader) {
-    this.arenaLoader = arenaLoader;
+  public ArenaCommand() {
+
   }
 
   @Override

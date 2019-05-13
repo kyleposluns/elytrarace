@@ -4,7 +4,6 @@ package com.kyleposluns.elytrarace;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kyleposluns.elytrarace.config.ERConfig;
-import com.kyleposluns.elytrarace.util.LocationTypeAdapter;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 

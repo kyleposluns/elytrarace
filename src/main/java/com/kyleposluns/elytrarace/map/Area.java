@@ -24,7 +24,6 @@ public class Area {
 
   }
 
-
   public boolean isInArea(Location location) {
     return (location.getX() < max.getX() && location.getX() > min.getX())
             && (location.getY() < max.getY() && location.getY() > min.getY())

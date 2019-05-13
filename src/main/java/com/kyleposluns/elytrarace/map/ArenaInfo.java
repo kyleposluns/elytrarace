@@ -21,7 +21,6 @@ public class ArenaInfo {
   private final Location spawn;
 
 
-
   private ArenaInfo(String name, String creator, Area[] borders, Area goal, Area start,
                     Location spawn) {
     this.name = name;

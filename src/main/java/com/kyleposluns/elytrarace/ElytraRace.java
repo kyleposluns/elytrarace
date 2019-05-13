@@ -4,7 +4,6 @@ package com.kyleposluns.elytrarace;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kyleposluns.elytrarace.config.ERConfig;
-import com.kyleposluns.elytrarace.map.ArenaLoader;
 import com.kyleposluns.elytrarace.util.LocationTypeAdapter;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,6 +28,7 @@ public class ElytraRace extends JavaPlugin {
             .registerTypeAdapter(Location.class, new LocationTypeAdapter())
             .create();
     this.saveDefaultConfig();
+    ClipboardManager clipboardManager = new ClipboardManager();
 
     this.config = new ERConfig(this.getConfig());
     this.arenaLoader = new ArenaLoader(this.config, this.getDataFolder(), this.gson);

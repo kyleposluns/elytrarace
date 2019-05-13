@@ -29,7 +29,6 @@ public final class Record {
     this.path = current.getPath();
   }
 
-
   public long getStartTime() {
     return this.startTime;
   }

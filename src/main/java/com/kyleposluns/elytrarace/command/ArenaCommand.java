@@ -1,6 +1,5 @@
 package com.kyleposluns.elytrarace.command;
 
-import com.kyleposluns.elytrarace.map.ArenaLoader;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,7 +14,6 @@ public abstract class ArenaCommand implements CommandExecutor {
     this.arenaLoader = arenaLoader;
   }
 
-
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     if (!(sender instanceof Player)) {
@@ -23,8 +21,12 @@ public abstract class ArenaCommand implements CommandExecutor {
       return true;
     }
 
-    this.onCommand((Player) sender, args);
-
+    try {
+      this.onCommand((Player) sender, args);
+    } catch (Exception e) {
+      failure(sender, "Something went wrong!");
+      e.printStackTrace();
+    }
 
     return true;
   }

@@ -2,8 +2,8 @@ package com.kyleposluns.elytrarace.records;
 
 import org.bukkit.Location;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Record {
 
@@ -13,13 +13,13 @@ public final class Record {
 
   private final boolean finished;
 
-  private final Queue<Location> path;
+  private final List<Location> path;
 
   public Record() {
     this.startTime = System.currentTimeMillis();
     this.endTime = -1L;
     this.finished = false;
-    this.path = new LinkedList<>();
+    this.path = new ArrayList<>();
   }
 
   public Record(Record current, boolean finished) {
@@ -49,7 +49,7 @@ public final class Record {
     return this.endTime - this.startTime;
   }
 
-  public Queue<Location> getPath() {
+  public List<Location> getPath() {
     return this.path;
   }
 

@@ -1,6 +1,4 @@
 records:
   max_entries: -1
   record_duration: -1
-arenas:
-  player_record_dir: playerdata
-  data_file: arenadata.json
+prefix: "&7[&3ElytraRace&7]"

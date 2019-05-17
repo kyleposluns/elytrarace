@@ -1,56 +1,25 @@
 package com.kyleposluns.elytrarace.records;
 
-import org.bukkit.Location;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 public final class Record {
 
-  private final long startTime;
+  private final UUID recordId;
 
-  private final long endTime;
+  private final RecordEntry entry;
 
-  private final boolean finished;
-
-  private final List<Location> path;
-
-  public Record() {
-    this.startTime = System.currentTimeMillis();
-    this.endTime = -1L;
-    this.finished = false;
-    this.path = new ArrayList<>();
+  public Record(UUID recordId, RecordEntry entry) {
+    this.recordId = recordId;
+    this.entry = entry;
   }
 
-  public Record(Record current, boolean finished) {
-    this.startTime = current.startTime;
-    this.endTime = System.currentTimeMillis();
-    this.finished = finished;
-    this.path = current.getPath();
+  public UUID getRecordId() {
+    return this.recordId;
   }
 
-  public long getStartTime() {
-    return this.startTime;
+  public RecordEntry getEntry() {
+    return this.entry;
   }
 
-  public long getFinishTime() {
-    return this.endTime;
-  }
-
-  public boolean finished() {
-    return this.finished;
-  }
-
-  public long getDuration() {
-    if (!this.finished) {
-      return Long.MAX_VALUE;
-    }
-
-    return this.endTime - this.startTime;
-  }
-
-  public List<Location> getPath() {
-    return this.path;
-  }
 
 }

@@ -1,10 +1,11 @@
 package com.kyleposluns.elytrarace.map;
 
 
-import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ArenaInfo {
 
@@ -12,23 +13,39 @@ public class ArenaInfo {
 
   private final String creator;
 
-  private final Area[] borders;
+  private final UUID worldId;
+
+  private final UUID arenaId;
+
+  private final List<Area> borders;
 
   private final Area goal;
 
   private final Area start;
 
-  private final Location spawn;
+  private final Vector spawn;
 
 
-  private ArenaInfo(String name, String creator, Area[] borders, Area goal, Area start,
-                    Location spawn) {
+  private ArenaInfo(String name, String creator, UUID arenaId, UUID worldId, List<Area> borders,
+                    Area goal,
+                    Area start,
+                    Vector spawn) {
     this.name = name;
     this.creator = creator;
+    this.arenaId = arenaId;
+    this.worldId = worldId;
     this.borders = borders;
     this.goal = goal;
     this.start = start;
     this.spawn = spawn;
+  }
+
+  public UUID getArenaId() {
+    return this.arenaId;
+  }
+
+  public UUID getWorldId() {
+    return this.worldId;
   }
 
   public String getName() {
@@ -39,7 +56,7 @@ public class ArenaInfo {
     return this.creator;
   }
 
-  public Area[] getBorders() {
+  public List<Area> getBorders() {
     return this.borders;
   }
 
@@ -47,7 +64,7 @@ public class ArenaInfo {
     return this.start;
   }
 
-  public Location getSpawn() {
+  public Vector getSpawn() {
     return this.spawn;
   }
 
@@ -61,21 +78,24 @@ public class ArenaInfo {
 
     private String creator;
 
-    private Area[] borders;
+    private UUID arenaId;
+
+    private UUID worldId;
+
+    private List<Area> borders;
 
     private Area goal;
 
     private Area start;
 
-    private Location spawn;
-
+    private Vector spawn;
 
     public Builder() {
-      this.borders = new Area[0];
+      this.arenaId = UUID.randomUUID();
+      this.borders = new ArrayList<>();
     }
 
-
-    public void spawn(Location spawn) {
+    public void spawn(Vector spawn) {
       this.spawn = spawn;
     }
 
@@ -87,14 +107,12 @@ public class ArenaInfo {
       this.start = start;
     }
 
-    public void borders(Area[] borders) {
+    public void borders(List<Area> borders) {
       this.borders = borders;
     }
 
-    public void border(Area border) {
-      List<Area> areas = Arrays.asList(this.borders);
-      areas.add(border);
-      this.borders = areas.toArray(new Area[]{});
+    public void border(Area area) {
+      this.borders.add(area);
     }
 
     public void creator(String creator) {
@@ -106,17 +124,18 @@ public class ArenaInfo {
     }
 
     public ArenaInfo create() {
-      if (this.name == null || this.creator == null || this.borders == null
+      if (this.name == null || this.creator == null || this.arenaId == null
+              || this.worldId == null || this.borders == null
               || this.goal == null || this.start == null || this.spawn == null) {
         throw new IllegalArgumentException("Cannot create an ArenaInfo from null data.");
       }
-      return new ArenaInfo(this.name, this.creator, this.borders, this.goal, this.start,
+      return new ArenaInfo(this.name, this.creator, this.arenaId, this.worldId, this.borders,
+              this.goal,
+              this.start,
               this.spawn);
     }
 
-
   }
-
 
 
 }

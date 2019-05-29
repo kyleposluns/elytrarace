@@ -8,10 +8,13 @@ import java.util.*;
 
 public final class FileKvStore<K, V> implements DataAccessManager<K, V> {
 
+  private KeyRepresentation<K> keyRepresentation;
+
   private final File dir;
 
-  public FileKvStore(File dir) {
+  public FileKvStore(File dir, KeyRepresentation<K> keyRepresentation) {
     this.dir = dir;
+    this.keyRepresentation = keyRepresentation;
 
     if (!(dir.exists())) {
       dir.mkdirs();
@@ -21,7 +24,12 @@ public final class FileKvStore<K, V> implements DataAccessManager<K, V> {
   @Override
   public Optional<V> get(K key) {
     File jsonFile = getFile(key);
-    return get(jsonFile);
+    return this.get(jsonFile);
+  }
+
+  @Override
+  public Optional<V> get(String key) {
+    return this.get(keyRepresentation.convert(key));
   }
 
   private Optional<V> get(File file) {
@@ -49,6 +57,18 @@ public final class FileKvStore<K, V> implements DataAccessManager<K, V> {
   }
 
   @Override
+  public void put(String key, V value) {
+    this.put(this.keyRepresentation.convert(key), value);
+  }
+
+  @Override
+  public void put(Map<K, V> map) {
+    for (Map.Entry<K, V> entry : map.entrySet()) {
+      this.put(entry.getKey(), entry.getValue());
+    }
+  }
+
+  @Override
   public void delete(K key) {
     File jsonFile = getFile(key);
 
@@ -59,23 +79,23 @@ public final class FileKvStore<K, V> implements DataAccessManager<K, V> {
   }
 
   private File getFile(K key) {
-    return new File(key.toString() + ".json");
+    return new File(this.keyRepresentation.convert(key) + ".json");
   }
 
   @Override
-  public Iterator<V> iterator() {
+  public Iterator<Entry<K, V>> entryIter() {
     return new FileKvStoreIterator<>(this);
   }
 
-  private class FileKvStoreIterator<V> implements Iterator<V> {
+  private class FileKvStoreIterator<K, V> implements Iterator<Entry<K, V>> {
 
-    private FileKvStore<?, V> storage;
+    private FileKvStore<K, V> storage;
 
     private int current;
 
     private List<File> filesInDir;
 
-    FileKvStoreIterator(FileKvStore<?, V> storage) {
+    FileKvStoreIterator(FileKvStore<K, V> storage) {
       this.storage = storage;
       if (this.storage.dir.isFile()) {
         throw new IllegalArgumentException("Can only iterate through " +
@@ -91,14 +111,15 @@ public final class FileKvStore<K, V> implements DataAccessManager<K, V> {
     }
 
     @Override
-    public V next() {
+    public Entry<K, V> next() {
       if (!(hasNext())) {
         throw new IndexOutOfBoundsException("Iterator does not contain a next element!");
       }
       File currentFile = this.filesInDir.get(this.current);
-      Optional<V> obj = this.storage.get(currentFile);
-      this.current = this.current + 1;
-      return obj.orElse(null);
+      K key =
+              this.storage.keyRepresentation.convert(ERUtils.stripFileExtension(currentFile.getName()));
+      Optional<V> valueOptional = this.storage.get(currentFile);
+      return valueOptional.map(v -> new Entry<>(key, v)).orElse(null);
     }
   }
 }

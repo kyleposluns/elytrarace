@@ -13,13 +13,13 @@ public final class Record {
     this.entry = entry;
   }
 
-  public UUID getRecordId() {
-    return this.recordId;
-  }
-
-  public RecordEntry getEntry() {
+  protected RecordEntry getRaw() {
     return this.entry;
   }
 
+
+  public UUID getRecordId() {
+    return this.recordId;
+  }
 
 }

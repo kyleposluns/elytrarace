@@ -11,21 +11,21 @@ public final class RecordEntry {
 
   private final long endTime;
 
-  private final boolean finished;
+  private final RaceResult result;
 
   private final List<Vector> path;
 
   public RecordEntry() {
     this.startTime = System.currentTimeMillis();
     this.endTime = -1L;
-    this.finished = false;
+    this.result = RaceResult.IN_PROGRESS;
     this.path = new ArrayList<>();
   }
 
-  public RecordEntry(RecordEntry current, boolean finished) {
+  public RecordEntry(RecordEntry current, RaceResult result) {
     this.startTime = current.startTime;
     this.endTime = System.currentTimeMillis();
-    this.finished = finished;
+    this.result = result;
     this.path = current.getPath();
   }
 
@@ -37,12 +37,12 @@ public final class RecordEntry {
     return this.endTime;
   }
 
-  public boolean finished() {
-    return this.finished;
+  public RaceResult finished() {
+    return this.result;
   }
 
   public long getDuration() {
-    if (!this.finished) {
+    if (this.result != RaceResult.IN_PROGRESS) {
       return Long.MAX_VALUE;
     }
 

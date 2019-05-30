@@ -28,17 +28,14 @@ public final class RecordBookImpl implements RecordBook {
 
   private final DataAccessManager<UUID, PlayerDataEntry> database;
 
-  private final Map<UUID, PlayerDataEntry> playerCache;
-
   RecordBookImpl(File arenaFile, Comparator<Record> recordComparator, int maxTop) {
     this.maxTop = maxTop;
     this.recordComparator = recordComparator;
     this.database = new FileKvStore<>(arenaFile, KEY_REPRESENTATION);
     this.topRecords = this.parseTopRecords();
-    this.playerCache = new HashMap<>();
   }
 
-  public RecordBookImpl(File arenaFile) {
+  RecordBookImpl(File arenaFile) {
     this(arenaFile, COMPARE_BY_TIME, DEFAULT_MAX_TOP);
   }
 
@@ -51,7 +48,6 @@ public final class RecordBookImpl implements RecordBook {
 
     while (entryIterator.hasNext()) {
       DataAccessManager.Entry<UUID, PlayerDataEntry> entry = entryIterator.next();
-      this.playerCache.put(entry.getKey(), entry.getValue());
       for (RecordEntry r : entry.getValue().getRecords()) {
         ERUtils.insert(top, new Record(entry.getKey(), r), this.recordComparator, this.maxTop);
       }
@@ -69,7 +65,7 @@ public final class RecordBookImpl implements RecordBook {
 
   @Override
   public Optional<PlayerDataEntry> getPlayerEntry(UUID owner) {
-    return Optional.ofNullable(playerCache.get(owner));
+    return this.database.get(owner);
   }
 
   @Override
@@ -78,19 +74,17 @@ public final class RecordBookImpl implements RecordBook {
   }
 
   @Override
-  public void save() {
-    this.database.put(this.playerCache);
-  }
-
-  @Override
-  public void addPlayer(UUID playerId) {
-    this.playerCache.put(playerId, new PlayerDataEntry());
-  }
-
-  @Override
   public void addRecord(Record record) {
+
     ERUtils.insert(this.topRecords, record, this.recordComparator, this.maxTop);
-    this.getPlayerEntry(record.getRecordId())
-            .ifPresent(playerData -> playerData.addEntry(record.getRaw()));
+    UUID uniqueId = record.getUniqueId();
+    Optional<PlayerDataEntry> entryOptional = this.getPlayerEntry(uniqueId);
+
+    PlayerDataEntry entry = entryOptional.orElse(new PlayerDataEntry());
+
+    entry.getRecords().add(record.getRaw());
+
+    this.database.put(uniqueId, entry);
+
   }
 }

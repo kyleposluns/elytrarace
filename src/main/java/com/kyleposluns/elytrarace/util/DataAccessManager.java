@@ -8,15 +8,11 @@ public interface DataAccessManager<K, V> {
 
   Optional<V> get(K key);
 
-  Optional<V> get(String key);
-
   void put(K key, V value);
 
-  void put(String key, V value);
+  void putMultiple(Map<K, V> map);
 
-  void put(Map<K, V> map);
-
-  void delete(K key);
+  boolean delete(K key);
 
   Iterator<Entry<K, V>> entryIter();
 

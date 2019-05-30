@@ -4,7 +4,6 @@ public enum RaceResult {
 
   SUCCESS,
   FAILED,
-  IN_PROGRESS,
   DISQUALIFIED;
 
 }

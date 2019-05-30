@@ -18,7 +18,7 @@ public final class RecordEntry {
   public RecordEntry() {
     this.startTime = System.currentTimeMillis();
     this.endTime = -1L;
-    this.result = RaceResult.IN_PROGRESS;
+    this.result = RaceResult.FAILED;
     this.path = new ArrayList<>();
   }
 
@@ -42,7 +42,7 @@ public final class RecordEntry {
   }
 
   public long getDuration() {
-    if (this.result != RaceResult.IN_PROGRESS) {
+    if (this.result != RaceResult.SUCCESS) {
       return Long.MAX_VALUE;
     }
 

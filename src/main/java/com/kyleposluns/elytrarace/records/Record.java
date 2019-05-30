@@ -4,12 +4,12 @@ import java.util.UUID;
 
 public final class Record {
 
-  private final UUID recordId;
+  private final UUID playerId;
 
   private final RecordEntry entry;
 
   public Record(UUID recordId, RecordEntry entry) {
-    this.recordId = recordId;
+    this.playerId = recordId;
     this.entry = entry;
   }
 
@@ -18,8 +18,8 @@ public final class Record {
   }
 
 
-  public UUID getRecordId() {
-    return this.recordId;
+  public UUID getUniqueId() {
+    return this.playerId;
   }
 
 }

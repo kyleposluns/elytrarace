@@ -14,9 +14,7 @@ public class ElytraRace extends JavaPlugin {
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
   private ERConfig config;
-
-  private ArenaManager arenaManager;
-
+  
   private String prefix;
 
   @Override

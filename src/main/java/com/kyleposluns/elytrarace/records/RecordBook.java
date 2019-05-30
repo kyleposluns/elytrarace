@@ -14,10 +14,6 @@ public interface RecordBook {
 
   List<Record> getTopRecords();
 
-  void save();
-
-  void addPlayer(UUID playerId);
-
   void addRecord(Record record);
 
 }

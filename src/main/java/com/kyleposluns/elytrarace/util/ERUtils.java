@@ -25,21 +25,4 @@ public class ERUtils {
   }
 
 
-  public static <T> boolean insert(LinkedList<T> list, T t, Comparator<T> tComparator,
-                                   int maxLen) {
-    ListIterator<T> topIterator = list.listIterator();
-    while (topIterator.hasNext()) {
-      T at = topIterator.next();
-      if (tComparator.compare(t, at) < 0) {
-        topIterator.previous();
-        topIterator.add(t);
-        if (list.size() > maxLen) {
-          list.removeLast();
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-
 }

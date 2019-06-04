@@ -46,7 +46,7 @@ public final class RecordBookImpl implements RecordBook {
     while (entryIterator.hasNext()) {
       DataAccessManager.Entry<UUID, PlayerDataEntry> entry = entryIterator.next();
       for (RecordEntry r : entry.getValue().getRecords()) {
-        ERUtils.insert(top, new Record(entry.getKey(), r), this.recordComparator, this.maxTop);
+        insert(top, new Record(entry.getKey(), r), this.recordComparator, this.maxTop);
       }
     }
     return top;
@@ -73,7 +73,7 @@ public final class RecordBookImpl implements RecordBook {
   @Override
   public void addRecord(Record record) {
 
-    ERUtils.insert(this.topRecords, record, this.recordComparator, this.maxTop);
+    insert(this.topRecords, record, this.recordComparator, this.maxTop);
     UUID uniqueId = record.getUniqueId();
     Optional<PlayerDataEntry> entryOptional = this.getPlayerEntry(uniqueId);
 
@@ -83,5 +83,22 @@ public final class RecordBookImpl implements RecordBook {
 
     this.database.put(uniqueId, entry);
 
+  }
+  
+  private static <T> boolean insert(LinkedList<T> list, T t, Comparator<T> tComparator,
+                                   int maxLen) {
+    ListIterator<T> topIterator = list.listIterator();
+    while (topIterator.hasNext()) {
+      T at = topIterator.next();
+      if (tComparator.compare(t, at) < 0) {
+        topIterator.previous();
+        topIterator.add(t);
+        if (list.size() > maxLen) {
+          list.removeLast();
+        }
+        return true;
+      }
+    }
+    return false;
   }
 }

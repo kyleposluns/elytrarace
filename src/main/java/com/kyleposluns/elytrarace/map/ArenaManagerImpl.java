@@ -18,43 +18,23 @@ public class ArenaManagerImpl implements ArenaManager {
 
   private File arenasDirectory;
 
-  public ArenaManagerImpl(File arenasDirectory) throws IOException {
+  public ArenaManagerImpl(File arenasDirectory) {
     this.arenasDirectory = arenasDirectory;
     this.activeArenas = new HashMap<>();
-    this.initLookup();
-    for (File arenaFile : Objects.requireNonNull(arenasDirectory.listFiles())) {
-      String id = arenaFile.getName();
-      File jsonFile = new File(arenaFile, id + ".json");
-      ArenaInfo info = ElytraRace.getGson().fromJson(new FileReader(jsonFile), ArenaInfo.class);
-      Arena arena = new ArenaImpl(info, arenaFile);
-      this.activeArenas.put(info.getArenaId(), arena);
-      ElytraRace.getInstance().getServer().getPluginManager().registerEvents(arena,
-              ElytraRace.getInstance());
+    try {
+      this.initLookup();
+      for (File arenaFile : Objects.requireNonNull(arenasDirectory.listFiles())) {
+        String id = arenaFile.getName();
+        File jsonFile = new File(arenaFile, id + ".json");
+        ArenaInfo info = ElytraRace.getGson().fromJson(new FileReader(jsonFile), ArenaInfo.class);
+        Arena arena = new ArenaImpl(info, arenaFile);
+        this.activeArenas.put(info.getArenaId(), arena);
+        ElytraRace.getInstance().getServer().getPluginManager().registerEvents(arena,
+                ElytraRace.getInstance());
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-  }
-
-  private void initLookup() throws IOException {
-    this.lookupFile = new File(arenasDirectory, "directory.json");
-    if (!lookupFile.exists()) {
-      this.arenaLookup = new ArenaLookup();
-    } else {
-      this.arenaLookup = ElytraRace.getGson().fromJson(new FileReader(this.lookupFile),
-              ArenaLookup.class);
-    }
-  }
-
-  private void saveArenaInfo(File arenaInfoFile, ArenaInfo info) throws IOException {
-    FileOutputStream fos = new FileOutputStream(arenaInfoFile);
-    String json = ElytraRace.getGson().toJson(info);
-    fos.write(json.getBytes());
-    fos.close();
-  }
-
-  private void saveLookup() throws IOException {
-    FileOutputStream fos = new FileOutputStream(this.lookupFile);
-    String json = ElytraRace.getGson().toJson(this.arenaLookup);
-    fos.write(json.getBytes());
-    fos.close();
   }
 
   @Override
@@ -87,6 +67,30 @@ public class ArenaManagerImpl implements ArenaManager {
   public Optional<Arena> getArena(String name) {
     return Optional.ofNullable(this.activeArenas
             .get(this.arenaLookup.get(name)));
+  }
+
+  private void initLookup() throws IOException {
+    this.lookupFile = new File(arenasDirectory, "directory.json");
+    if (!lookupFile.exists()) {
+      this.arenaLookup = new ArenaLookup();
+    } else {
+      this.arenaLookup = ElytraRace.getGson().fromJson(new FileReader(this.lookupFile),
+              ArenaLookup.class);
+    }
+  }
+
+  private void saveArenaInfo(File arenaInfoFile, ArenaInfo info) throws IOException {
+    FileOutputStream fos = new FileOutputStream(arenaInfoFile);
+    String json = ElytraRace.getGson().toJson(info);
+    fos.write(json.getBytes());
+    fos.close();
+  }
+
+  private void saveLookup() throws IOException {
+    FileOutputStream fos = new FileOutputStream(this.lookupFile);
+    String json = ElytraRace.getGson().toJson(this.arenaLookup);
+    fos.write(json.getBytes());
+    fos.close();
   }
 
   private class ArenaLookup {

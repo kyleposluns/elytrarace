@@ -8,7 +8,6 @@ import com.kyleposluns.elytrarace.map.ArenaManagerImpl;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 
 
 public class ElytraRace extends JavaPlugin {
@@ -36,12 +35,7 @@ public class ElytraRace extends JavaPlugin {
     if (!arenasDir.exists()) {
       arenasDir.mkdirs();
     }
-
-    try {
-      this.arenaManager = new ArenaManagerImpl(arenasDir);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    this.arenaManager = new ArenaManagerImpl(arenasDir);
   }
 
   public ERConfig getGameConfig() {

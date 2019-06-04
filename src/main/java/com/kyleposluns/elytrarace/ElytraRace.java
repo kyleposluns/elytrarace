@@ -4,11 +4,11 @@ package com.kyleposluns.elytrarace;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kyleposluns.elytrarace.config.ERConfig;
-import com.kyleposluns.elytrarace.map.ArenaManager;
+import com.kyleposluns.elytrarace.map.ArenaManagerImpl;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class ElytraRace extends JavaPlugin {
@@ -17,9 +17,11 @@ public class ElytraRace extends JavaPlugin {
 
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
+  private static final String ARENA_DIRECTORY_PATH = "arenas";
+
   private ERConfig config;
 
-  private ArenaManager arenaManager;
+  private ArenaManagerImpl arenaManager;
 
   private String prefix;
 
@@ -30,16 +32,20 @@ public class ElytraRace extends JavaPlugin {
 
     this.config = new ERConfig(this.getConfig());
     this.prefix = config.getPrefix();
-    File arenasDir = new File(this.getDataFolder(), "arenas");
+    File arenasDir = new File(this.getDataFolder(), ARENA_DIRECTORY_PATH);
     if (!arenasDir.exists()) {
       arenasDir.mkdirs();
     }
 
     try {
-      this.arenaManager = new ArenaManager(arenasDir);
-    } catch (FileNotFoundException e) {
+      this.arenaManager = new ArenaManagerImpl(arenasDir);
+    } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public ERConfig getGameConfig() {
+    return this.config;
   }
 
 

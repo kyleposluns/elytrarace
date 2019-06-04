@@ -9,9 +9,6 @@ public class ERConfig {
 
   private static final String MAX_RECORD_ENTRIES = "records.max_entries";
 
-  private static final String RECORD_DURATION = "records.duration";
-
-
   private FileConfiguration config;
 
   public ERConfig(FileConfiguration config) {
@@ -23,14 +20,10 @@ public class ERConfig {
             this.config.getString(PREFIX, ""));
 
   }
-
   public int getMaxEntries() {
     return this.config.getInt(MAX_RECORD_ENTRIES);
   }
 
-  public int getRecordDuration() {
-    return this.config.getInt(RECORD_DURATION);
-  }
 
 
 

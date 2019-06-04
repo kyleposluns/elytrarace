@@ -1,5 +1,6 @@
 package com.kyleposluns.elytrarace.records;
 
+import com.kyleposluns.elytrarace.ElytraRace;
 import com.kyleposluns.elytrarace.util.DataAccessManager;
 import com.kyleposluns.elytrarace.util.ERUtils;
 import com.kyleposluns.elytrarace.util.FileKvStore;
@@ -18,7 +19,7 @@ public final class RecordBookImpl implements RecordBook {
           new KeyRepresentation<>(UUID::toString,
                   UUID::fromString);
 
-  private static final int DEFAULT_MAX_TOP = 5;
+  private int autoSaveTask;
 
   private final int maxTop;
 
@@ -29,7 +30,7 @@ public final class RecordBookImpl implements RecordBook {
   private final DataAccessManager<UUID, PlayerDataEntry> database;
 
   public RecordBookImpl(File arenaFile) {
-    this.maxTop = DEFAULT_MAX_TOP;
+    this.maxTop = ElytraRace.getInstance().getGameConfig().getMaxEntries();
     this.recordComparator = COMPARE_BY_TIME;
     this.database = new FileKvStore<>(arenaFile, KEY_REPRESENTATION);
     this.topRecords = this.parseTopRecords();

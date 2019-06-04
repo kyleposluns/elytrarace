@@ -12,6 +12,8 @@ public class ArenaInfo {
 
   private final String name;
 
+  private final String displayName;
+
   private final String creator;
 
   private final UUID worldId;
@@ -31,11 +33,13 @@ public class ArenaInfo {
   private final float spawnPitch;
 
 
-  private ArenaInfo(String name, String creator, UUID arenaId, UUID worldId, List<Area> borders,
+  private ArenaInfo(String name, String displayName, String creator, UUID arenaId, UUID worldId,
+                    List<Area> borders,
                     Area goal,
                     Area start,
                     Vector spawn, float spawnYaw, float spawnPitch) {
     this.name = name;
+    this.displayName = displayName;
     this.creator = creator;
     this.arenaId = arenaId;
     this.worldId = worldId;
@@ -61,6 +65,10 @@ public class ArenaInfo {
 
   public String getCreator() {
     return this.creator;
+  }
+
+  public String getDisplayName() {
+    return this.displayName;
   }
 
   public List<Area> getBorders() {
@@ -90,6 +98,8 @@ public class ArenaInfo {
   public static class Builder {
 
     private String name;
+
+    private String displayName;
 
     private String creator;
 
@@ -126,6 +136,10 @@ public class ArenaInfo {
       this.spawnPitch = 0;
     }
 
+    public void displayName(String displayName) {
+      this.displayName = displayName;
+    }
+
     public void goal(Area goal) {
       this.goal = goal;
     }
@@ -155,12 +169,19 @@ public class ArenaInfo {
     }
 
     public ArenaInfo create() {
-      if (this.name == null || this.creator == null || this.arenaId == null
-              || this.worldId == null || this.borders == null
-              || this.goal == null || this.start == null || this.spawn == null) {
+      if (this.name == null
+              || this.displayName == null
+              || this.creator == null
+              || this.arenaId == null
+              || this.worldId == null
+              || this.borders == null
+              || this.goal == null
+              || this.start == null
+              || this.spawn == null) {
         throw new IllegalArgumentException("Cannot create an ArenaInfo from null data.");
       }
-      return new ArenaInfo(this.name, this.creator, this.arenaId, this.worldId, this.borders,
+      return new ArenaInfo(this.name, this.displayName, this.creator, this.arenaId, this.worldId,
+              this.borders,
               this.goal,
               this.start,
               this.spawn, this.spawnYaw, this.spawnPitch);

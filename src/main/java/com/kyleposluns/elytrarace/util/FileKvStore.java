@@ -44,6 +44,9 @@ public final class FileKvStore<K, V> implements DataAccessManager<K, V> {
     File jsonFile = getFile(key);
     String json = ElytraRace.getGson().toJson(value);
     try {
+      if (!jsonFile.exists()) {
+        jsonFile.createNewFile();
+      }
       FileOutputStream fos = new FileOutputStream(jsonFile);
       fos.write(json.getBytes());
       fos.close();

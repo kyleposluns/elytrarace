@@ -91,6 +91,7 @@ public class ArenaImpl implements Arena {
     Player player = event.getPlayer();
 
     if (!this.isActivated(player)) return;
+    if (event.getTo() == null) return;
 
     Vector to = event.getTo().toVector();
     Vector from = event.getFrom().toVector();

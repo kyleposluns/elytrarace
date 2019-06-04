@@ -2,7 +2,6 @@ package com.kyleposluns.elytrarace.records;
 
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class RecordEntry {
@@ -15,18 +14,11 @@ public final class RecordEntry {
 
   private final List<Vector> path;
 
-  public RecordEntry() {
-    this.startTime = System.currentTimeMillis();
-    this.endTime = -1L;
-    this.result = RaceResult.FAILED;
-    this.path = new ArrayList<>();
-  }
-
-  public RecordEntry(RecordEntry current, RaceResult result) {
-    this.startTime = current.startTime;
-    this.endTime = System.currentTimeMillis();
+  protected RecordEntry(long startTime, long endTime, RaceResult result, List<Vector> path) {
+    this.startTime = startTime;
+    this.endTime = endTime;
     this.result = result;
-    this.path = current.getPath();
+    this.path = path;
   }
 
   public long getStartTime() {

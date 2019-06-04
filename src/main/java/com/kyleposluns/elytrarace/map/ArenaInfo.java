@@ -1,6 +1,7 @@
 package com.kyleposluns.elytrarace.map;
 
 
+import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -25,11 +26,15 @@ public class ArenaInfo {
 
   private final Vector spawn;
 
+  private final float spawnYaw;
+
+  private final float spawnPitch;
+
 
   private ArenaInfo(String name, String creator, UUID arenaId, UUID worldId, List<Area> borders,
                     Area goal,
                     Area start,
-                    Vector spawn) {
+                    Vector spawn, float spawnYaw, float spawnPitch) {
     this.name = name;
     this.creator = creator;
     this.arenaId = arenaId;
@@ -38,6 +43,8 @@ public class ArenaInfo {
     this.goal = goal;
     this.start = start;
     this.spawn = spawn;
+    this.spawnYaw = spawnYaw;
+    this.spawnPitch = spawnPitch;
   }
 
   public UUID getArenaId() {
@@ -72,6 +79,14 @@ public class ArenaInfo {
     return this.goal;
   }
 
+  public float getSpawnYaw() {
+    return this.spawnYaw;
+  }
+
+  public float getSpawnPitch() {
+    return this.spawnPitch;
+  }
+
   public static class Builder {
 
     private String name;
@@ -90,13 +105,25 @@ public class ArenaInfo {
 
     private Vector spawn;
 
+    private float spawnYaw;
+
+    private float spawnPitch;
+
     public Builder() {
       this.arenaId = UUID.randomUUID();
       this.borders = new ArrayList<>();
     }
 
+    public void spawn(Location spawn) {
+      this.spawn = new Vector(spawn.getX(), spawn.getY(), spawn.getZ());
+      this.spawnYaw = spawn.getYaw();
+      this.spawnPitch = spawn.getPitch();
+    }
+
     public void spawn(Vector spawn) {
       this.spawn = spawn;
+      this.spawnYaw = 0;
+      this.spawnPitch = 0;
     }
 
     public void goal(Area goal) {
@@ -123,6 +150,10 @@ public class ArenaInfo {
       this.name = name;
     }
 
+    public void world(UUID worldId) {
+      this.worldId = worldId;
+    }
+
     public ArenaInfo create() {
       if (this.name == null || this.creator == null || this.arenaId == null
               || this.worldId == null || this.borders == null
@@ -132,7 +163,7 @@ public class ArenaInfo {
       return new ArenaInfo(this.name, this.creator, this.arenaId, this.worldId, this.borders,
               this.goal,
               this.start,
-              this.spawn);
+              this.spawn, this.spawnYaw, this.spawnPitch);
     }
 
   }

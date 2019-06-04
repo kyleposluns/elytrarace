@@ -21,8 +21,14 @@ public class Area {
 
   public boolean isInArea(Vector vector) {
     return vector.isInAABB(this.min, this.max);
-
   }
 
+  public static boolean isEntering(Area area, Vector to, Vector from) {
+    return area.isInArea(to) && !area.isInArea(from);
+  }
+
+  public static boolean isExiting(Area area, Vector to, Vector from) {
+    return !area.isInArea(to) && area.isInArea(from);
+  }
 
 }

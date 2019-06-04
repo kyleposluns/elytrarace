@@ -1,46 +1,23 @@
 package com.kyleposluns.elytrarace.map;
 
+import com.kyleposluns.elytrarace.records.RaceResult;
 import com.kyleposluns.elytrarace.records.RecordBook;
-import com.kyleposluns.elytrarace.records.RecordBookImpl;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.function.Function;
 
-public class Arena {
+public interface Arena {
 
-  private static final String PLAYER_DATA = "playerdata";
+  void activate(Player player);
 
-  private RecordBook records;
+  void reset(Player player);
 
-  private ArenaInfo arenaInfo;
+  void deactivate(Player player);
 
-  private Set<UUID> activePlayers;
+  void startRun(Player player);
 
+  void finishRun(Player player, RaceResult result);
 
-
-  public Arena(ArenaInfo arenaInfo) {
-    this.arenaInfo = arenaInfo;
-    File arenaFile = new File(arenaInfo.getArenaId().toString());
-    File playerDataFile = new File(arenaFile, PLAYER_DATA);
-    playerDataFile.mkdirs();
-    this.records =
-            new RecordBookImpl(playerDataFile);
-    this.activePlayers = new HashSet<>();
-  }
-
-
-
-  public void activate(Player player) {
-    this.activePlayers.add(player.getUniqueId());
-
-  }
-
-  public void deactivate(Player player) {
-    this.activePlayers.remove(player.getUniqueId());
-  }
-
+  double getStatistic(Function<RecordBook, Double> function);
 
 }

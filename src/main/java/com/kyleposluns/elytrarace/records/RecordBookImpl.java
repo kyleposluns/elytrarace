@@ -28,15 +28,11 @@ public final class RecordBookImpl implements RecordBook {
 
   private final DataAccessManager<UUID, PlayerDataEntry> database;
 
-  RecordBookImpl(File arenaFile, Comparator<Record> recordComparator, int maxTop) {
-    this.maxTop = maxTop;
-    this.recordComparator = recordComparator;
+  public RecordBookImpl(File arenaFile) {
+    this.maxTop = DEFAULT_MAX_TOP;
+    this.recordComparator = COMPARE_BY_TIME;
     this.database = new FileKvStore<>(arenaFile, KEY_REPRESENTATION);
     this.topRecords = this.parseTopRecords();
-  }
-
-  RecordBookImpl(File arenaFile) {
-    this(arenaFile, COMPARE_BY_TIME, DEFAULT_MAX_TOP);
   }
 
   private LinkedList<Record> parseTopRecords() {

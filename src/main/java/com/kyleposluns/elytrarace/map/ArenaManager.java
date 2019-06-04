@@ -22,7 +22,9 @@ public class ArenaManager {
       String id = arenaFile.getName();
       File jsonFile = new File(arenaFile, id + ".json");
       ArenaInfo info = ElytraRace.getGson().fromJson(new FileReader(jsonFile), ArenaInfo.class);
-      this.activeArenas.add(new ArenaImpl(info));
+      Arena arena = new ArenaImpl(info, arenaFile);
+      this.activeArenas.add(arena);
+      ElytraRace.getInstance().getServer().getPluginManager().registerEvents(arena, ElytraRace.getInstance());
     }
   }
 

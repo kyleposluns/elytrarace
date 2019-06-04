@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
@@ -16,7 +15,7 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 
-public class ArenaImpl implements Arena, Listener {
+public class ArenaImpl implements Arena {
 
   private static final String PLAYER_DATA = "playerdata";
 
@@ -30,9 +29,8 @@ public class ArenaImpl implements Arena, Listener {
 
   private Map<UUID, ActiveRun> activeRuns;
 
-  public ArenaImpl(ArenaInfo arenaInfo) {
+  public ArenaImpl(ArenaInfo arenaInfo, File arenaFile) {
     this.arenaInfo = arenaInfo;
-    File arenaFile = new File(arenaInfo.getArenaId().toString());
     File playerDataFile = new File(arenaFile, PLAYER_DATA);
     playerDataFile.mkdirs();
     this.records =
@@ -113,7 +111,6 @@ public class ArenaImpl implements Arena, Listener {
     if (isOnRun(player)) {
       this.finishRun(player, RaceResult.DISQUALIFIED);
     }
-
   }
 
   private boolean isActivated(Player player) {

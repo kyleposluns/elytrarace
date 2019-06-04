@@ -3,10 +3,11 @@ package com.kyleposluns.elytrarace.map;
 import com.kyleposluns.elytrarace.records.RaceResult;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import java.util.function.Function;
 
-public interface Arena {
+public interface Arena extends Listener {
 
   void activate(Player player);
 

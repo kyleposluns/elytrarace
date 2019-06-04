@@ -11,10 +11,8 @@ public class PlayerDataEntry {
     this.records = new LinkedList<>();
   }
 
-
   public List<RecordEntry> getRecords() {
     return this.records;
   }
-
 
 }

@@ -1,9 +1,6 @@
 package com.kyleposluns.elytrarace.util;
 
 import java.io.File;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class ERUtils {
 

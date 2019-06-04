@@ -24,8 +24,4 @@ public class ERConfig {
     return this.config.getInt(MAX_RECORD_ENTRIES);
   }
 
-
-
-
-
 }

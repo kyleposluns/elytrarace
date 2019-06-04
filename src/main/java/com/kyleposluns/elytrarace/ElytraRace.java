@@ -9,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-
 public class ElytraRace extends JavaPlugin {
 
   private static ElytraRace instance;

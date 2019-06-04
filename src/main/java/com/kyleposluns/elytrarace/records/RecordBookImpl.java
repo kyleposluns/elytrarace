@@ -2,7 +2,6 @@ package com.kyleposluns.elytrarace.records;
 
 import com.kyleposluns.elytrarace.ElytraRace;
 import com.kyleposluns.elytrarace.util.DataAccessManager;
-import com.kyleposluns.elytrarace.util.ERUtils;
 import com.kyleposluns.elytrarace.util.FileKvStore;
 import com.kyleposluns.elytrarace.util.KeyRepresentation;
 import org.bukkit.util.Vector;
@@ -84,7 +83,7 @@ public final class RecordBookImpl implements RecordBook {
     this.database.put(uniqueId, entry);
 
   }
-  
+
   private static <T> boolean insert(LinkedList<T> list, T t, Comparator<T> tComparator,
                                    int maxLen) {
     ListIterator<T> topIterator = list.listIterator();

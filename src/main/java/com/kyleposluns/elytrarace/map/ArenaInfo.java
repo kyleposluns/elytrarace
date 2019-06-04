@@ -32,7 +32,6 @@ public class ArenaInfo {
 
   private final float spawnPitch;
 
-
   private ArenaInfo(String name, String displayName, String creator, UUID arenaId, UUID worldId,
                     List<Area> borders,
                     Area goal,
@@ -188,6 +187,5 @@ public class ArenaInfo {
     }
 
   }
-
 
 }

@@ -85,7 +85,6 @@ public class ArenaImpl implements Arena {
     return function.apply(this.records);
   }
 
-
   @EventHandler
   public void onMove(PlayerMoveEvent event) {
     Player player = event.getPlayer();
@@ -121,6 +120,5 @@ public class ArenaImpl implements Arena {
   private boolean isOnRun(Player player) {
     return this.isActivated(player) && this.activeRuns.containsKey(player.getUniqueId());
   }
-
 
 }

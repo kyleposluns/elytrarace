@@ -8,15 +8,14 @@ public final class Record {
 
   private final RecordEntry entry;
 
-  public Record(UUID recordId, RecordEntry entry) {
+  Record(UUID recordId, RecordEntry entry) {
     this.playerId = recordId;
     this.entry = entry;
   }
 
-  protected RecordEntry getRaw() {
+  public RecordEntry getRaw() {
     return this.entry;
   }
-
 
   public UUID getUniqueId() {
     return this.playerId;

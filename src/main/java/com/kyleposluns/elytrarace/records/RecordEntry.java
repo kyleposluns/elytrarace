@@ -14,7 +14,7 @@ public final class RecordEntry {
 
   private final List<Vector> path;
 
-  protected RecordEntry(long startTime, long endTime, RaceResult result, List<Vector> path) {
+  RecordEntry(long startTime, long endTime, RaceResult result, List<Vector> path) {
     this.startTime = startTime;
     this.endTime = endTime;
     this.result = result;

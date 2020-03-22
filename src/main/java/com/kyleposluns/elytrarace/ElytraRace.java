@@ -9,15 +9,12 @@ import java.io.File;
 
 public class ElytraRace extends JavaPlugin {
 
-  private static ElytraRace instance;
-
   private static final String ARENA_DIRECTORY_PATH = "arenas";
 
   private String prefix;
 
   @Override
   public void onEnable() {
-    instance = this;
     this.saveDefaultConfig();
 
   }
@@ -25,7 +22,8 @@ public class ElytraRace extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    instance = null;
+
+
   }
 
 

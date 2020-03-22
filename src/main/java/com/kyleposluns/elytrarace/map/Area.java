@@ -2,33 +2,24 @@ package com.kyleposluns.elytrarace.map;
 
 import org.bukkit.util.Vector;
 
-public class Area {
+/**
+ * Represents an area in space.
+ */
+public interface Area {
 
-  private final Vector min;
+  /**
+   * Determines if a 3-dimensional coordinate is in this area.
+   * @param vector The coordinate.
+   * @return If the vector is in the space or not.
+   */
+  boolean isInArea(Vector vector);
 
-  private final Vector max;
-
-  public Area(Vector loc1, Vector loc2) {
-    this.min = new Vector(
-            Math.min(loc1.getX(), loc2.getX()),
-            Math.min(loc1.getY(), loc2.getY()),
-            Math.min(loc1.getZ(), loc2.getZ()));
-    this.max = new Vector(
-            Math.max(loc1.getX(), loc2.getX()),
-            Math.max(loc1.getY(), loc2.getY()),
-            Math.max(loc1.getZ(), loc2.getZ()));
-  }
-
-  public boolean isInArea(Vector vector) {
-    return vector.isInAABB(this.min, this.max);
-  }
-
-  public static boolean isEntering(Area area, Vector to, Vector from) {
-    return area.isInArea(to) && !area.isInArea(from);
-  }
-
-  public static boolean isExiting(Area area, Vector to, Vector from) {
-    return !area.isInArea(to) && area.isInArea(from);
-  }
+  /**
+   * A function that adds extensibility for children of this object.
+   * @param visitor The visitor object.
+   * @param <R> The result of the operation.
+   * @return A value computed using this area.
+   */
+  <R> R visitArea(AreaVisitor<R> visitor);
 
 }

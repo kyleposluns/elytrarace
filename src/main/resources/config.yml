@@ -1,3 +1,6 @@
-records:
-  max_entries: -1
-prefix: "&7[&3ElytraRace&7]"
+database:
+  server_name: "localhost"
+  port: "3306"
+  database_name: "hyperion_elytra_race"
+  user:
+  password:

@@ -1,27 +1,50 @@
 package com.kyleposluns.elytrarace.config;
 
-import org.bukkit.ChatColor;
+import com.kyleposluns.elytrarace.database.ConnectionInfo;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ERConfig {
 
-  private static final String PREFIX = "prefix";
+  private static final String SERVER_NAME = "server_name";
 
-  private static final String MAX_RECORD_ENTRIES = "records.max_entries";
+  private static final String PORT = "port";
 
-  private FileConfiguration config;
+  private static final String DATABASE_NAME = "database_name";
 
-  public ERConfig(FileConfiguration config) {
-    this.config = config;
+  private static final String USER_NAME = "user";
+
+  private static final String PASSWORD = "password";
+
+  private static final String DATABASE = "database";
+
+  private final String serverName;
+
+  private final String port;
+
+  private final String databaseName;
+
+  private final String userName;
+
+  private final String password;
+
+  public ERConfig(FileConfiguration configuration) {
+    ConfigurationSection databaseSection = configuration.getConfigurationSection(DATABASE);
+    if (databaseSection == null) {
+      throw new IllegalArgumentException("Cannot connect to a database without required fields");
+    }
+
+    this.serverName = databaseSection.getString(SERVER_NAME);
+    this.port = databaseSection.getString(PORT);
+    this.databaseName = databaseSection.getString(DATABASE_NAME);
+    this.userName = databaseSection.getString(USER_NAME);
+    this.password = databaseSection.getString(PASSWORD);
   }
 
-  public String getPrefix() {
-    return ChatColor.translateAlternateColorCodes('&',
-            this.config.getString(PREFIX, ""));
 
-  }
-  public int getMaxEntries() {
-    return this.config.getInt(MAX_RECORD_ENTRIES);
+  public ConnectionInfo getConnectionInfo() {
+    return new ConnectionInfo(this.serverName, this.port, this.databaseName, this.userName,
+        this.password);
   }
 
 }

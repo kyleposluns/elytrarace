@@ -149,5 +149,5 @@ fabric.properties
 
 *.iml
 
-./idea
+.idea
 .DS_Store

@@ -1,6 +1,0 @@
-database:
-  server_name: "localhost"
-  port: "3306"
-  database_name: "hyperion_elytra_race"
-  user:
-  password:

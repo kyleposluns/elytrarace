@@ -30,7 +30,7 @@ public class CircleArea implements Area {
   }
 
   @Override
-  public boolean isInArea(Vector vector) {
+  public boolean contains(Vector vector) {
     switch (this.axis) {
       case X: {
         return Math.abs(this.center.getBlockZ() - vector.getBlockZ()) < this.radius

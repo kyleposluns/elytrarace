@@ -12,7 +12,7 @@ public interface Area {
    * @param vector The coordinate.
    * @return If the vector is in the space or not.
    */
-  boolean isInArea(Vector vector);
+  boolean contains(Vector vector);
 
   /**
    * A function that adds extensibility for children of this object.

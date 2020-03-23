@@ -22,7 +22,7 @@ public class SphereArea implements Area {
   }
 
   @Override
-  public boolean isInArea(Vector vector) {
+  public boolean contains(Vector vector) {
     return vector.isInSphere(this.center, this.radius);
   }
 

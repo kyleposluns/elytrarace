@@ -16,7 +16,7 @@ public class CustomArea implements Area {
   }
 
   @Override
-  public boolean isInArea(Vector vector) {
+  public boolean contains(Vector vector) {
     return vectors.stream().anyMatch(v ->
         v.getBlockX() == vector.getBlockX() && v.getBlockY() ==
             vector.getBlockY() && v.getBlockZ() == vector.getBlockZ());

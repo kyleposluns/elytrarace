@@ -22,7 +22,7 @@ public class CuboidArea implements Area {
   }
 
   @Override
-  public boolean isInArea(Vector vector) {
+  public boolean contains(Vector vector) {
     return vector.isInAABB(this.min, this.max);
   }
 

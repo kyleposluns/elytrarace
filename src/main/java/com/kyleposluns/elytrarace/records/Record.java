@@ -17,6 +17,11 @@ public interface Record {
   UUID getPlayerId();
 
   /**
+   * Gets the date the record occurred in seconds.
+   */
+  long getDate();
+
+  /**
    * Gets the amount of time the player took to complete the course.
    * @return The time in seconds.
    */

@@ -10,21 +10,27 @@ import org.bukkit.event.Listener;
 public interface RaceTracker extends Listener {
 
   /**
-   * Determines if a given player is being tracked by this tracker.
+   * Determines if a given player is actively flying in the course. If this is true, it also implies
+   * that isTracked is also true.
    *
    * @param playerId The ID of the player.
-   * @return Whether or not the player is being tracked.
+   * @return Whether or not the player is racing.
    */
-  boolean isInRace(UUID playerId);
-
+  boolean isRacing(UUID playerId);
 
   /**
-   * Gets the current runtime of the player's run if the player is not being tracked this will throw
-   * an IllegalArgumentException.
+   * Determines if a player is being tracked by this tracker. This does not imply that
+   * the player is currently racing.
+   */
+  boolean isTracked(UUID playerId);
+
+  /**
+   * Gets the current runtime of the player's run if the player is not currently racing this will
+   * throw an IllegalArgumentException.
    *
-   * @throws IllegalArgumentException
    * @param playerId The ID of the player.
    * @return The time of the player.
+   * @throws IllegalArgumentException if the player is not currently racing.
    */
   long getCurrentTime(UUID playerId) throws IllegalArgumentException;
 

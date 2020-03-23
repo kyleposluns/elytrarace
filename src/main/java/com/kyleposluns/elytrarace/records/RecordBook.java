@@ -2,6 +2,7 @@ package com.kyleposluns.elytrarace.records;
 
 import java.util.List;
 import java.util.UUID;
+import org.bukkit.util.Vector;
 
 /**
  * A RecordBook is a object that is responsible for keeping information about races called records.
@@ -30,5 +31,11 @@ public interface RecordBook {
   default Record getTopRecord() {
     return this.getTopRecords(1).get(0);
   }
+
+  /**
+   * Report a record to this record book.
+   * @param record The record to be stored.
+   */
+  void report(Record record);
 
 }

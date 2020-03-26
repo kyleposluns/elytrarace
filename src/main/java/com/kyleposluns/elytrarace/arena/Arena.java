@@ -1,4 +1,4 @@
-package com.kyleposluns.elytrarace.map;
+package com.kyleposluns.elytrarace.arena;
 
 
 import com.kyleposluns.elytrarace.records.RecordBook;

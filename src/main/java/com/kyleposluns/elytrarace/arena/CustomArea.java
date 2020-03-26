@@ -1,4 +1,4 @@
-package com.kyleposluns.elytrarace.map;
+package com.kyleposluns.elytrarace.arena;
 
 import java.util.List;
 import org.bukkit.util.Vector;

@@ -1,6 +1,7 @@
 package com.kyleposluns.elytrarace.config;
 
-import com.kyleposluns.elytrarace.database.ConnectionInfo;
+import com.kyleposluns.elytrarace.database.Credentials;
+import com.kyleposluns.elytrarace.database.mongo.ElytraMongoCredentials;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -20,7 +21,7 @@ public class ERConfig {
 
   private final String serverName;
 
-  private final String port;
+  private final int port;
 
   private final String databaseName;
 
@@ -35,16 +36,15 @@ public class ERConfig {
     }
 
     this.serverName = databaseSection.getString(SERVER_NAME);
-    this.port = databaseSection.getString(PORT);
+    this.port = databaseSection.getInt(PORT);
     this.databaseName = databaseSection.getString(DATABASE_NAME);
     this.userName = databaseSection.getString(USER_NAME);
     this.password = databaseSection.getString(PASSWORD);
   }
 
 
-  public ConnectionInfo getConnectionInfo() {
-    return new ConnectionInfo(this.serverName, this.port, this.databaseName, this.userName,
-        this.password);
+  public Credentials getConnectionInfo() {
+    return new ElytraMongoCredentials(this.serverName, port, this.databaseName, this.userName, this.password);
   }
 
 }

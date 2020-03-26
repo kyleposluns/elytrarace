@@ -1,4 +1,4 @@
-package com.kyleposluns.elytrarace.map;
+package com.kyleposluns.elytrarace.arena;
 
 /**
  * Function object that performs an operation on a Area.

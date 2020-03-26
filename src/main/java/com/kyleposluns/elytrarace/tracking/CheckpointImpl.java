@@ -1,6 +1,6 @@
 package com.kyleposluns.elytrarace.tracking;
 
-import com.kyleposluns.elytrarace.map.Area;
+import com.kyleposluns.elytrarace.arena.Area;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;

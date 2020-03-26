@@ -1,6 +1,6 @@
 package com.kyleposluns.elytrarace.game;
 
-import com.kyleposluns.elytrarace.map.Arena;
+import com.kyleposluns.elytrarace.arena.Arena;
 import java.util.UUID;
 import org.bukkit.event.Listener;
 

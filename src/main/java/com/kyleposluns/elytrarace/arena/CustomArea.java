@@ -1,9 +1,10 @@
 package com.kyleposluns.elytrarace.arena;
 
 import java.util.List;
+import java.util.Objects;
 import org.bukkit.util.Vector;
 
-public class CustomArea implements Area {
+class CustomArea implements Area {
 
   private List<Vector> vectors;
 
@@ -26,4 +27,5 @@ public class CustomArea implements Area {
   public <R> R visitArea(AreaVisitor<R> visitor) {
     return visitor.visitCustom(this);
   }
+
 }

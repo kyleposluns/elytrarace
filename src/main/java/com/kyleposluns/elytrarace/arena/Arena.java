@@ -6,6 +6,7 @@ import com.kyleposluns.elytrarace.tracking.RaceTracker;
 import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Represents an arena in a world.
@@ -32,12 +33,16 @@ public interface Arena extends Listener {
    */
   Location getSpawn();
 
+  /**
+   * The name of this arena.
+   */
+  String getName();
 
   /**
    * Return an object responsible for tracking players in this arena.
    * @return This arena's RaceTracker.
    */
-  RaceTracker getRaceTracker();
+  RaceTracker createRaceTracker(Plugin plugin);
 
   /**
    * Return an object responsible for keeping records about the fasting times in this arena.

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
+import javax.print.Doc;
 import org.bson.BsonBinary;
 import org.bson.Document;
 
@@ -27,7 +28,7 @@ public class ElytraMongoDatabase extends AbstractDatabase {
 
   private static final String RECORD_BOOKS_COLLECTION = "records";
 
-  private static final String CHECK_POINTS_COLLECTION = "check-points";
+  private static final String CHECK_POINTS_COLLECTION = "checkpoints";
 
   private final MongoDatabase database;
 
@@ -40,31 +41,18 @@ public class ElytraMongoDatabase extends AbstractDatabase {
   }
 
   @Override
-  public List<Arena> getArenas() {
-    MongoCollection<Document> collection = database.getCollection("arenas");
-    return null;
-  }
-
-  private RecordBook findRecordBook(String name, UUID id) {
-    FindIterable<Document> documents = database.getCollection(RECORD_BOOKS_COLLECTION)
-        .find(new BasicDBObject(name, new BsonBinary(id).asDocument()));
-    RecordBookBuilder builder = new RecordBookBuilder();
-
-    StreamSupport.stream(documents.spliterator(), false)
-        .map(Document::toJson).map(json -> gson.fromJson(json, Record.class))
-        .forEach(builder::record);
-
-    return builder.build();
-  }
-
-  @Override
   protected RecordBook findPlayerRecordBook(UUID playerId) {
-    return findRecordBook("player-id", playerId);
+    return null;
   }
 
   @Override
   protected RecordBook findArenaRecordBook(UUID arenaId) {
-    return findRecordBook("arena-id", arenaId);
+    return null;
+  }
+
+  @Override
+  public List<Arena> getArenas() {
+    return null;
   }
 
 

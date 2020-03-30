@@ -1,8 +1,9 @@
 package com.kyleposluns.elytrarace.arena;
 
+import java.util.Objects;
 import org.bukkit.util.Vector;
 
-public class SphereArea implements Area {
+class SphereArea implements Area {
 
   private final Vector center;
 
@@ -29,5 +30,25 @@ public class SphereArea implements Area {
   @Override
   public <R> R visitArea(AreaVisitor<R> visitor) {
     return visitor.visitSphere(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof SphereArea)) {
+      return false;
+    }
+
+    if (o == this) {
+      return true;
+    }
+
+    SphereArea area = (SphereArea) o;
+    return this.center.equals(area.center)
+        && this.radius == area.radius;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.center, this.radius);
   }
 }

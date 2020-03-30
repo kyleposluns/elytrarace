@@ -1,8 +1,9 @@
 package com.kyleposluns.elytrarace.arena;
 
+import java.util.Objects;
 import org.bukkit.util.Vector;
 
-public class CuboidArea implements Area {
+class CuboidArea implements Area {
 
   private final Vector min;
 
@@ -29,5 +30,25 @@ public class CuboidArea implements Area {
   @Override
   public <R> R visitArea(AreaVisitor<R> visitor) {
     return visitor.visitCuboid(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof CuboidArea)) {
+      return false;
+    }
+
+    if (o == this) {
+      return true;
+    }
+
+    CuboidArea area = (CuboidArea) o;
+    return this.min.equals(area.min)
+        && this.max.equals(area.max);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.min, this.max);
   }
 }

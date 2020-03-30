@@ -1,9 +1,10 @@
 package com.kyleposluns.elytrarace.arena;
 
+import java.util.Objects;
 import org.bukkit.Axis;
 import org.bukkit.util.Vector;
 
-public class CircleArea implements Area {
+class CircleArea implements Area {
 
   private final Vector center;
 
@@ -51,6 +52,27 @@ public class CircleArea implements Area {
         throw new IllegalArgumentException("Cannot interpret an unknown axis.");
       }
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof CircleArea)) {
+      return false;
+    }
+
+    if (o == this) {
+      return true;
+    }
+
+    CircleArea area = (CircleArea) o;
+    return this.axis.equals(area.axis)
+        && this.center.equals(area.center)
+        && this.radius == area.radius;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.center, this.axis, this.radius);
   }
 
   @Override

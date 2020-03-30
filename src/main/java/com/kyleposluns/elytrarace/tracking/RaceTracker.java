@@ -19,10 +19,32 @@ public interface RaceTracker extends Listener {
   boolean isRacing(UUID playerId);
 
   /**
+   * Begin tracking the player.
+   */
+  void track(UUID playerId);
+
+  /**
+   * Stop tracking the player with this tracker.
+   */
+  void unTrack(UUID playerId);
+
+  /**
    * Determines if a player is being tracked by this tracker. This does not imply that
    * the player is currently racing.
    */
-  boolean isTracked(UUID playerId);
+  boolean isTracking(UUID playerId);
+
+  /**
+   * Start the race for a player.
+   * @param playerId The ID of the player.
+   */
+  void startRace(UUID playerId);
+
+  /**
+   * End the race for a player.
+   * @param playerId The ID of the player.
+   */
+  void endRace(UUID playerId);
 
   /**
    * Gets the current runtime of the player's run if the player is not currently racing this will

@@ -1,6 +1,6 @@
 package com.kyleposluns.elytrarace.tracking;
 
-import com.kyleposluns.elytrarace.arena.Area;
+import com.kyleposluns.elytrarace.arena.area.Area;
 import com.kyleposluns.elytrarace.records.Record;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.kyleposluns.elytrarace.records.RecordBuilder;

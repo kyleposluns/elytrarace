@@ -2,7 +2,7 @@ package com.kyleposluns.elytrarace.database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kyleposluns.elytrarace.arena.AreaTypeAdapterFactory;
+import com.kyleposluns.elytrarace.arena.area.AreaTypeAdapterFactory;
 import com.kyleposluns.elytrarace.arena.LocationAdapter;
 import com.kyleposluns.elytrarace.records.Record;
 import com.kyleposluns.elytrarace.records.RecordAdapter;

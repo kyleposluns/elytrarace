@@ -1,4 +1,4 @@
-package com.kyleposluns.elytrarace.arena;
+package com.kyleposluns.elytrarace.arena.area;
 
 import java.util.ArrayList;
 import java.util.List;

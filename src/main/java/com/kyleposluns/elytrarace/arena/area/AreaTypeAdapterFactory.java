@@ -1,4 +1,4 @@
-package com.kyleposluns.elytrarace.arena;
+package com.kyleposluns.elytrarace.arena.area;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;

@@ -13,7 +13,7 @@ public class AreaTypeAdapterFactory implements TypeAdapterFactory {
   public AreaTypeAdapterFactory() {
     this.factory = RuntimeTypeAdapterFactory.of(Area.class)
         .registerSubtype(CircleArea.class).registerSubtype(CuboidArea.class)
-        .registerSubtype(CustomArea.class).registerSubtype(SphereArea.class);
+        .registerSubtype(SphereArea.class);
   }
 
 

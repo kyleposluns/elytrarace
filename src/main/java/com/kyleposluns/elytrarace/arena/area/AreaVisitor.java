@@ -21,13 +21,6 @@ public interface AreaVisitor<R> {
   R visitSphere(SphereArea sphere);
 
   /**
-   * Visits a CustomArea and returns a value of type R.
-   * @param custom The cuboid area object.
-   * @return A computation result of type R.
-   */
-  R visitCustom(CustomArea custom);
-
-  /**
    * Visits a CircleArea and returns a value of type R.
    * @param circle The cuboid area object.
    * @return A computation result of type R.

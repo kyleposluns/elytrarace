@@ -4,6 +4,7 @@ import com.kyleposluns.elytrarace.arena.ArenaManager;
 import com.kyleposluns.elytrarace.database.AbstractDatabase;
 import com.kyleposluns.elytrarace.database.Credentials;
 import com.kyleposluns.elytrarace.database.CredentialsVisitor;
+import com.kyleposluns.elytrarace.database.sql.ElytraSQLCredentials;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
@@ -23,7 +24,7 @@ public class ElytraMongoDatabase extends AbstractDatabase {
   private final MongoClient client;
 
   public ElytraMongoDatabase(Credentials credentials) {
-    super();
+    super(credentials);
     this.client = credentials.visitCredentials(new MongoClientCreator());
     this.database = credentials.visitCredentials(new GetAuthenticatedDatabase(this.client));
     System.out.println(this.database.getName());
@@ -63,6 +64,11 @@ public class ElytraMongoDatabase extends AbstractDatabase {
     public MongoDatabase visitMongoDBCredentials(ElytraMongoCredentials mongoCredentials) {
       return client.getDatabase(mongoCredentials.getDatabaseName());
     }
+
+    @Override
+    public MongoDatabase visitSQLDBCredentials(ElytraSQLCredentials sqlCredentials) {
+      throw new UnsupportedOperationException();
+    }
   }
 
 
@@ -77,6 +83,11 @@ public class ElytraMongoDatabase extends AbstractDatabase {
       return new MongoClient(
           new ServerAddress(mongoCredentials.getHostName(), mongoCredentials.getPort()),
           Collections.singletonList(credential));
+    }
+
+    @Override
+    public MongoClient visitSQLDBCredentials(ElytraSQLCredentials sqlCredentials) {
+      throw new UnsupportedOperationException();
     }
   }
 

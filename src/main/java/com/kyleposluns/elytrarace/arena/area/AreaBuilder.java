@@ -1,7 +1,5 @@
 package com.kyleposluns.elytrarace.arena.area;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.Axis;
 import org.bukkit.util.Vector;
 
@@ -17,8 +15,6 @@ public class AreaBuilder {
 
   private Vector position2;
 
-  private List<Vector> positions;
-
 
   public AreaBuilder() {
     this.radius = null;
@@ -26,7 +22,6 @@ public class AreaBuilder {
     this.center = null;
     this.position1 = null;
     this.position2 = null;
-    this.positions = new ArrayList<>();
   }
 
   public AreaBuilder radius(double radius) {
@@ -54,21 +49,11 @@ public class AreaBuilder {
     return this;
   }
 
-  public AreaBuilder positions(List<Vector> positions) {
-    this.positions.addAll(positions);
-    return this;
-  }
-
-  public AreaBuilder position(Vector position) {
-    this.positions.add(position);
-    return this;
-  }
-
   public Area build() {
     if (this.radius != null) {
 
       if (this.center == null) {
-        throw new IllegalArgumentException(
+        throw new IllegalStateException(
             "Could not build an area with the provided information");
       }
       if (this.axis == null) {
@@ -77,14 +62,11 @@ public class AreaBuilder {
         return new CircleArea(this.center, this.axis, this.radius);
       }
 
-
     } else {
       if (this.position1 != null && this.position2 != null) {
         return new CuboidArea(this.position1, this.position2);
-      } else if (!this.positions.isEmpty()) {
-        return new CustomArea(this.positions);
       } else {
-        throw new IllegalArgumentException(
+        throw new IllegalStateException(
             "Could not build an area with the provided information.");
       }
 

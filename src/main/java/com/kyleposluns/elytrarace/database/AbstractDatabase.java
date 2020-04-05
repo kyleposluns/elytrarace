@@ -14,7 +14,10 @@ public abstract class AbstractDatabase implements ElytraDatabase {
 
   protected final Gson gson;
 
-  public AbstractDatabase() {
+  protected final Credentials credentials;
+
+  public AbstractDatabase(Credentials credentials) {
+    this.credentials = credentials;
     this.gson = new GsonBuilder().registerTypeAdapter(Record.class, new RecordAdapter())
         .registerTypeAdapter(Location.class, new LocationAdapter())
         .registerTypeAdapterFactory(new AreaTypeAdapterFactory()).create();

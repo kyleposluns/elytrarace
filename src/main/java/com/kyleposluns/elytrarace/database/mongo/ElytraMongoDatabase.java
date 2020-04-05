@@ -1,9 +1,9 @@
 package com.kyleposluns.elytrarace.database.mongo;
 
 import com.kyleposluns.elytrarace.arena.ArenaManager;
-import com.kyleposluns.elytrarace.database.AbstractDatabase;
 import com.kyleposluns.elytrarace.database.Credentials;
 import com.kyleposluns.elytrarace.database.CredentialsVisitor;
+import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.database.sql.ElytraSQLCredentials;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.mongodb.MongoClient;
@@ -13,7 +13,7 @@ import com.mongodb.client.MongoDatabase;
 import java.util.Collections;
 import java.util.UUID;
 
-public class ElytraMongoDatabase extends AbstractDatabase {
+public class ElytraMongoDatabase implements ElytraDatabase {
 
   private static final String ARENAS_COLLECTION = "arenas";
 
@@ -24,21 +24,9 @@ public class ElytraMongoDatabase extends AbstractDatabase {
   private final MongoClient client;
 
   public ElytraMongoDatabase(Credentials credentials) {
-    super(credentials);
     this.client = credentials.visitCredentials(new MongoClientCreator());
     this.database = credentials.visitCredentials(new GetAuthenticatedDatabase(this.client));
     System.out.println(this.database.getName());
-  }
-
-
-  @Override
-  protected RecordBook findPlayerRecordBook(UUID playerId) {
-    return null;
-  }
-
-  @Override
-  protected RecordBook findArenaRecordBook(UUID arenaId) {
-    return null;
   }
 
   @Override

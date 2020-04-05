@@ -1,6 +1,7 @@
 package com.kyleposluns.elytrarace.tracking;
 
 import com.kyleposluns.elytrarace.arena.area.Area;
+import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.records.Record;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.kyleposluns.elytrarace.records.RecordBuilder;
@@ -39,13 +40,16 @@ public class RaceTrackerImpl implements RaceTracker {
 
   private final RecordBook recordBook;
 
+  private final ElytraDatabase database;
+
   private final UUID arenaId;
 
   private final Plugin plugin;
 
-  public RaceTrackerImpl(Plugin plugin, UUID arenaId, List<Area> areas, RecordBook recordBook,
+  public RaceTrackerImpl(Plugin plugin, ElytraDatabase database, UUID arenaId, List<Area> areas, RecordBook recordBook,
       Location spawn) {
     this.plugin = plugin;
+    this.database = database;
     this.arenaId = arenaId;
     this.tracking = new HashSet<>();
     this.startTimes = new HashMap<>();
@@ -85,6 +89,7 @@ public class RaceTrackerImpl implements RaceTracker {
     this.trackedLocations.remove(playerId);
     this.plugin.getServer().getScheduler().cancelTask(this.locationTrackingThreads.get(playerId));
     this.locationTrackingThreads.remove(playerId);
+    this.database.saveRecordBook(this.recordBook);
   }
 
   @Override

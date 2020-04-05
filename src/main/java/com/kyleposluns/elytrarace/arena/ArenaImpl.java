@@ -1,6 +1,7 @@
 package com.kyleposluns.elytrarace.arena;
 
 import com.kyleposluns.elytrarace.arena.area.Area;
+import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.kyleposluns.elytrarace.tracking.RaceTracker;
 import com.kyleposluns.elytrarace.tracking.RaceTrackerImpl;
@@ -66,9 +67,10 @@ public class ArenaImpl implements Arena {
   }
 
   @Override
-  public RaceTracker createRaceTracker(Plugin plugin) {
+  public RaceTracker createRaceTracker(Plugin plugin, ElytraDatabase database) {
     if (this.tracker == null) {
-      this.tracker = new RaceTrackerImpl(plugin, this.arenaId, this.checkpoints, this.recordBook,
+      this.tracker = new RaceTrackerImpl(plugin, database, this.arenaId, this.checkpoints,
+          this.recordBook,
           this.spawn);
       plugin.getServer().getPluginManager().registerEvents(this.tracker, plugin);
     }

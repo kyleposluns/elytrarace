@@ -37,6 +37,15 @@ public class ElytraSQLDatabase implements ElytraDatabase {
     return new PlayerRecordBookDeserializer(playerId).deserialize(this.connection);
   }
 
+  @Override
+  public void close() {
+    try {
+      this.connection.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
   static class CreateDriverVisitor implements CredentialsVisitor<Connection> {
 
     @Override
@@ -48,7 +57,7 @@ public class ElytraSQLDatabase implements ElytraDatabase {
     public Connection visitSQLDBCredentials(ElytraSQLCredentials sqlCredentials) {
       try {
         return DriverManager.getConnection(String
-                .format("jdbc:mysql://%s:%d/%s", sqlCredentials.getHostName(), sqlCredentials.getPort(),
+                .format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC", sqlCredentials.getHostName(), sqlCredentials.getPort(),
                     sqlCredentials.getDatabaseName()), sqlCredentials.getUser(),
             sqlCredentials.getPassword());
       } catch (SQLException e) {

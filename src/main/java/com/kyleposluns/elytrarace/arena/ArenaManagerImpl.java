@@ -15,6 +15,11 @@ public class ArenaManagerImpl implements ArenaManager {
   }
 
   @Override
+  public boolean hasArena(String arenaName) {
+    return this.arenas.containsKey(arenaName);
+  }
+
+  @Override
   public Arena getArena(String arenaName) throws IllegalArgumentException {
     return Optional.of(this.arenas.get(arenaName)).orElseThrow(() -> new IllegalArgumentException(
         String.format("Could not find the arena: \"%s.\"", arenaName)));

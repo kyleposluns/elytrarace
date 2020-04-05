@@ -39,6 +39,16 @@ public class ElytraMongoDatabase implements ElytraDatabase {
 
   }
 
+  @Override
+  public RecordBook getPlayerRecords(UUID playerId) {
+    return null;
+  }
+
+  @Override
+  public void close() {
+    this.client.close();
+  }
+
 
   static class GetAuthenticatedDatabase implements CredentialsVisitor<MongoDatabase> {
 

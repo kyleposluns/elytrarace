@@ -60,7 +60,7 @@ public class PlayerPositionAdapter implements SQLDeserializer<List<Vector>>,
           statement.setDouble(2, vector.getX());
           statement.setDouble(3, vector.getY());
           statement.setDouble(4, vector.getZ());
-          statement.executeUpdate();
+          statement.execute();
 
         } catch (SQLException e) {
           e.printStackTrace();

@@ -12,4 +12,6 @@ public interface ElytraDatabase {
 
   RecordBook getPlayerRecords(UUID playerId);
 
+  void close();
+
 }

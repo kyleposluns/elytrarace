@@ -81,4 +81,5 @@ public class ArenaImpl implements Arena {
   public RecordBook getRecordBook() {
     return this.recordBook;
   }
+
 }

@@ -1,13 +1,23 @@
 package com.kyleposluns.elytrarace.config;
 
 import com.kyleposluns.elytrarace.database.Credentials;
+import com.kyleposluns.elytrarace.database.ElytraDatabase;
+import com.kyleposluns.elytrarace.database.GetDatabaseVisitor;
 import com.kyleposluns.elytrarace.database.mongo.ElytraMongoCredentials;
+import com.kyleposluns.elytrarace.database.sql.ElytraSQLCredentials;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 
 public class ERConfig {
 
-  private static final String SERVER_NAME = "server_name";
+  private static final String DATABASE = "database";
+
+  private static final String MYSQL = "mysql";
+
+  private static final String MONGO = "mongo";
+
+  private static final String HOST = "host";
 
   private static final String PORT = "port";
 
@@ -17,34 +27,27 @@ public class ERConfig {
 
   private static final String PASSWORD = "password";
 
-  private static final String DATABASE = "database";
-
-  private final String serverName;
-
-  private final int port;
-
-  private final String databaseName;
-
-  private final String userName;
-
-  private final String password;
+  private Credentials credentials;
 
   public ERConfig(FileConfiguration configuration) {
     ConfigurationSection databaseSection = configuration.getConfigurationSection(DATABASE);
     if (databaseSection == null) {
-      throw new IllegalArgumentException("Cannot connect to a database without required fields");
+      throw new IllegalStateException("Cannot connect to a database without required fields");
     }
-
-    this.serverName = databaseSection.getString(SERVER_NAME);
-    this.port = databaseSection.getInt(PORT);
-    this.databaseName = databaseSection.getString(DATABASE_NAME);
-    this.userName = databaseSection.getString(USER_NAME);
-    this.password = databaseSection.getString(PASSWORD);
+    if (databaseSection.contains(MYSQL)) {
+      this.credentials = new ElytraSQLCredentials(databaseSection.getString(HOST),
+          databaseSection.getInt(PORT), databaseSection.getString(DATABASE_NAME),
+          databaseSection.getString(USER_NAME), databaseSection.getString(
+          PASSWORD));
+    } else if (databaseSection.contains(MONGO)) {
+      throw new UnsupportedOperationException();
+    } else {
+      throw new IllegalStateException("Cannot connect to a known type of database");
+    }
   }
 
-
-  public Credentials getConnectionInfo() {
-    return new ElytraMongoCredentials(this.serverName, port, this.databaseName, this.userName, this.password);
+  public ElytraDatabase getDatabase() {
+    return this.credentials.visitCredentials(new GetDatabaseVisitor());
   }
 
 }

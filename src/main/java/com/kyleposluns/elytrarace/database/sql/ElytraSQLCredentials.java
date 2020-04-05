@@ -5,9 +5,9 @@ import com.kyleposluns.elytrarace.database.CredentialsVisitor;
 
 public class ElytraSQLCredentials extends AbstractCredentials {
 
-  public ElytraSQLCredentials(String hostName, int port, String databaseName, String user,
+  public ElytraSQLCredentials(String hostName, int port, String database, String user,
       String password) {
-    super(hostName, port, databaseName, user, password);
+    super(hostName, port, database, user, password);
   }
 
   @Override

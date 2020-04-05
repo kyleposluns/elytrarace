@@ -4,6 +4,12 @@ version: 1.0.0
 description: Elytra Race hub minigame.
 main: com.kyleposluns.elytrarace.ElytraRace
 commands:
-  elytrarace:
-    description: Main Command for ElytraRace plugin!
+  race:
+    description: Race command
+    usage: /<command> <arena>
+  stoprace:
+    description: Stop the current race.
+    usage: /<command>
+  arenas:
+    description: List the arenas.
     usage: /<command>

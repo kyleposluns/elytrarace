@@ -22,6 +22,8 @@ public class ArenaImpl implements Arena {
 
   private final String name;
 
+  private final String displayName;
+
   private final List<Area> checkpoints;
 
   private transient RaceTracker tracker;
@@ -33,17 +35,7 @@ public class ArenaImpl implements Arena {
     this.recordBook = recordBook;
     this.checkpoints = info.getAreas();
     this.name = info.getName();
-  }
-
-  public ArenaImpl(UUID arenaId, UUID worldId, String name, Location spawn,
-      List<Area> checkpoints, RecordBook recordBook) {
-    this.arenaId = arenaId;
-    this.worldId = worldId;
-    this.spawn = spawn;
-    this.name = name;
-    this.recordBook = recordBook;
-    this.checkpoints = checkpoints;
-    this.tracker = null;
+    this.displayName = info.getDisplayName();
   }
 
   @Override
@@ -64,6 +56,11 @@ public class ArenaImpl implements Arena {
   @Override
   public String getName() {
     return this.name;
+  }
+
+  @Override
+  public String getDisplayName() {
+    return this.displayName;
   }
 
   @Override

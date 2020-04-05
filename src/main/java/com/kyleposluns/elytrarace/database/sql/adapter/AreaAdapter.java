@@ -20,9 +20,9 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
 
   private static final String AXIS = "axis";
 
-  private static final String POSITION_1 = "pos_1";
+  private static final String POSITION_1 = "pos1_id";
 
-  private static final String POSITION_2 = "pos_2";
+  private static final String POSITION_2 = "pos2_id";
 
   private final UUID arenaId;
 

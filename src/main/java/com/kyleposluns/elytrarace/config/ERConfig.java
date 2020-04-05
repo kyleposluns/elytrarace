@@ -3,11 +3,9 @@ package com.kyleposluns.elytrarace.config;
 import com.kyleposluns.elytrarace.database.Credentials;
 import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.database.GetDatabaseVisitor;
-import com.kyleposluns.elytrarace.database.mongo.ElytraMongoCredentials;
 import com.kyleposluns.elytrarace.database.sql.ElytraSQLCredentials;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
 
 public class ERConfig {
 
@@ -35,9 +33,11 @@ public class ERConfig {
       throw new IllegalStateException("Cannot connect to a database without required fields");
     }
     if (databaseSection.contains(MYSQL)) {
-      this.credentials = new ElytraSQLCredentials(databaseSection.getString(HOST),
-          databaseSection.getInt(PORT), databaseSection.getString(DATABASE_NAME),
-          databaseSection.getString(USER_NAME), databaseSection.getString(
+      ConfigurationSection mysql = databaseSection.getConfigurationSection(MYSQL);
+      assert mysql != null;
+      this.credentials = new ElytraSQLCredentials(mysql.getString(HOST),
+          mysql.getInt(PORT), mysql.getString(DATABASE_NAME),
+          mysql.getString(USER_NAME), mysql.getString(
           PASSWORD));
     } else if (databaseSection.contains(MONGO)) {
       throw new UnsupportedOperationException();

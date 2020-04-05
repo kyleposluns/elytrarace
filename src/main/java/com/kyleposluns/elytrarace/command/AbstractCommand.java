@@ -6,12 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public abstract class ArenaCommand implements CommandExecutor {
-
-
-  public ArenaCommand() {
-
-  }
+public abstract class AbstractCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

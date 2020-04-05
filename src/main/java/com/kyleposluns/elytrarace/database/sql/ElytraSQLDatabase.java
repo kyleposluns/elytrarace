@@ -4,7 +4,6 @@ import com.kyleposluns.elytrarace.arena.ArenaManager;
 import com.kyleposluns.elytrarace.database.Credentials;
 import com.kyleposluns.elytrarace.database.CredentialsVisitor;
 import com.kyleposluns.elytrarace.database.ElytraDatabase;
-import com.kyleposluns.elytrarace.database.mongo.ElytraMongoCredentials;
 import com.kyleposluns.elytrarace.database.sql.adapter.ArenaManagerAdapter;
 import com.kyleposluns.elytrarace.database.sql.adapter.PlayerRecordBookDeserializer;
 import com.kyleposluns.elytrarace.database.sql.adapter.RecordBookSerializer;
@@ -47,15 +46,12 @@ public class ElytraSQLDatabase implements ElytraDatabase {
   }
 
   static class CreateDriverVisitor implements CredentialsVisitor<Connection> {
-
-    @Override
-    public Connection visitMongoDBCredentials(ElytraMongoCredentials mongoCredentials) {
-      throw new UnsupportedOperationException();
-    }
-
     @Override
     public Connection visitSQLDBCredentials(ElytraSQLCredentials sqlCredentials) {
       try {
+        System.out.println(String
+                .format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC", sqlCredentials.getHostName(), sqlCredentials.getPort(),
+                    sqlCredentials.getDatabaseName()));
         return DriverManager.getConnection(String
                 .format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC", sqlCredentials.getHostName(), sqlCredentials.getPort(),
                     sqlCredentials.getDatabaseName()), sqlCredentials.getUser(),

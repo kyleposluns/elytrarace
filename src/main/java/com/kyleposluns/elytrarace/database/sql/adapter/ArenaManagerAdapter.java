@@ -24,6 +24,8 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
 
   private static final String ARENA_NAME = "arena_name";
 
+  private static final String DISPLAY_NAME = "display_name";
+
   private static final String WORLD_ID = "world_id";
 
   private static final String PITCH = "pitch";
@@ -45,6 +47,7 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
       while (rs.next()) {
         UUID arenaId = UUID.fromString(rs.getString(ARENA_ID));
         String name = rs.getString(ARENA_NAME);
+        String displayName = rs.getString(DISPLAY_NAME);
         UUID worldId = UUID.fromString(rs.getString(WORLD_ID));
         double x = rs.getDouble(X);
         double y = rs.getDouble(Y);
@@ -53,7 +56,7 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
         float pitch = rs.getFloat(PITCH);
         Location loc = new Location(Bukkit.getWorld(worldId), x, y, z, yaw, pitch);
         List<Area> areas = new AreaAdapter(arenaId).deserialize(connection);
-        ArenaInfo info = new ArenaInfo(worldId, arenaId, loc, name, areas);
+        ArenaInfo info = new ArenaInfo(worldId, arenaId, loc, name, displayName, areas);
         RecordBook records = new ArenaRecordBookDeserializer(arenaId).deserialize(connection);
         arenas.add(new ArenaImpl(info, records));
       }

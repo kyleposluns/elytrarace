@@ -36,8 +36,15 @@ public interface Arena extends Listener {
 
   /**
    * The name of this arena.
+   * @return The lowercase name.
    */
   String getName();
+
+  /**
+   * Get the display name of this arena.
+   * @return The display name.
+   */
+  String getDisplayName();
 
   /**
    * Return an object responsible for tracking players in this arena.

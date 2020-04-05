@@ -1,6 +1,5 @@
 package com.kyleposluns.elytrarace.database;
 
-import com.kyleposluns.elytrarace.database.mongo.ElytraMongoCredentials;
 import com.kyleposluns.elytrarace.database.sql.ElytraSQLCredentials;
 
 /**
@@ -10,13 +9,6 @@ import com.kyleposluns.elytrarace.database.sql.ElytraSQLCredentials;
  * @param <R> The type of the result of the computation.
  */
 public interface CredentialsVisitor<R> {
-
-  /**
-   * Visits mongo credentials and performs a computation on mongo credentials.
-   * @param mongoCredentials The mongo credentials.
-   * @return Some result.
-   */
-  R visitMongoDBCredentials(ElytraMongoCredentials mongoCredentials);
 
   /**
    * Visits SQL credentials and performs a computation on SQL credentials.

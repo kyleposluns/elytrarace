@@ -1,57 +1,103 @@
 package com.kyleposluns.elytrarace.arena.area;
 
 import java.util.Objects;
-import org.bukkit.Axis;
 import org.bukkit.util.Vector;
 
 class CircleArea implements Area {
 
-  private final Vector center;
+  private Vector center;
 
-  private final Axis axis;
+  private double radius;
 
-  private final double radius;
+  private double rotX;
 
-  public CircleArea(Vector center, Axis axis, double radius) {
+  private double rotY;
+
+  private double rotZ;
+
+  public CircleArea(Vector center, double radius, double rotX, double rotY, double rotZ) {
     this.center = center;
-    this.axis = axis;
     this.radius = radius;
+    this.rotX = rotX;
+    this.rotY = rotY;
+    this.rotZ = rotZ;
   }
 
   public Vector getCenter() {
-    return this.center;
-  }
-
-  public Axis getAxis() {
-    return this.axis;
+    return center;
   }
 
   public double getRadius() {
-    return this.radius;
+    return radius;
+  }
+
+  public double getRotX() {
+    return this.rotX;
+  }
+
+  public double getRotY() {
+    return this.rotY;
+  }
+
+  public double getRotZ() {
+    return this.rotZ;
+  }
+
+  private Vector rotateOnXAxis(Vector vector, Vector center, double degrees) {
+    Vector copy = vector.clone().subtract(center);
+    double theta = Math.toRadians(degrees);
+    double newX = copy.getX();
+    double newY = (copy.getY() * Math.cos(theta)) - (copy.getZ() * Math.sin(theta));
+    double newZ = (copy.getZ() * Math.sin(theta)) + (copy.getZ() * Math.cos(theta));
+
+    return new Vector(newX, newY, newZ).add(center);
+  }
+
+  private Vector rotateOnZAxis(Vector vector, Vector center, double degrees) {
+    Vector copy = vector.clone().subtract(center);
+    double theta = Math.toRadians(degrees);
+
+    double newX = (copy.getX() * Math.cos(theta)) - (copy.getY() * Math.sin(theta));
+    double newY = (copy.getX() * Math.sin(theta)) + (copy.getY() * Math.cos(theta));
+    double newZ = copy.getZ();
+    return new Vector(newX, newY, newZ).add(center);
+  }
+
+  private Vector rotateOnYAxis(Vector vector, Vector center, double degrees) {
+    Vector copy = vector.clone().subtract(center);
+    double theta = Math.toRadians(degrees);
+    double newX = (copy.getX() * Math.cos(theta)) + (copy.getZ() * Math.sin(theta));
+    double newY = copy.getY();
+    double newZ = (copy.getX() * -1 * Math.sin(theta)) + (copy.getZ() * Math.cos(theta));
+    return new Vector(newX, newY, newZ).add(center);
+  }
+
+  private Vector rotate(Vector vector, Vector center) {
+    return rotateOnXAxis(
+        rotateOnYAxis(rotateOnZAxis(vector, center, -this.getRotZ()), center, -this.getRotY()),
+        center, -this.getRotX());
   }
 
   @Override
   public boolean contains(Vector vector) {
-    switch (this.axis) {
-      case X: {
-        return Math.abs(this.center.getBlockZ() - vector.getBlockZ()) < this.radius
-            && Math.abs(this.center.getBlockY() - vector.getBlockY()) < this.radius
-            && this.center.getBlockX() == vector.getBlockX();
-      }
-      case Y: {
-        return Math.abs(this.center.getBlockZ() - vector.getBlockZ()) < this.radius
-            && Math.abs(this.center.getBlockX() - vector.getBlockX()) < this.radius
-            && this.center.getBlockY() == vector.getBlockY();
-      }
-      case Z: {
-        return Math.abs(this.center.getBlockY() - vector.getBlockY()) < this.radius
-            && Math.abs(this.center.getBlockX() - vector.getBlockX()) < this.radius
-            && this.center.getBlockZ() == vector.getBlockZ();
-      }
-      default: {
-        throw new IllegalArgumentException("Cannot interpret an unknown axis.");
-      }
-    }
+    Vector rotatedCenter = rotate(this.center, this.center);
+
+    //System.out.println("Rotated center: " + rotatedCenter.toString());
+
+    Vector rotatedPoint = rotate(vector, this.center);
+
+    //System.out.println("Rotated point: " + rotatedPoint.toString());
+
+    double distanceSquared =
+        ((rotatedCenter.getY() - rotatedPoint.getY()) * (rotatedCenter.getY() - rotatedPoint
+            .getY()))
+            + ((rotatedCenter.getZ() - rotatedPoint.getZ()) * (rotatedCenter.getZ() - rotatedPoint
+            .getZ()));
+
+    double distance = Math.sqrt(distanceSquared);
+
+
+    return distance <= this.radius && Math.abs(rotatedCenter.getX() - rotatedPoint.getX()) <= 0.5;
   }
 
   @Override
@@ -65,14 +111,16 @@ class CircleArea implements Area {
     }
 
     CircleArea area = (CircleArea) o;
-    return this.axis.equals(area.axis)
+    return this.rotX == area.rotX
+        && this.rotY == area.rotY
+        && this.rotZ == area.rotZ
         && this.center.equals(area.center)
         && this.radius == area.radius;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.center, this.axis, this.radius);
+    return Objects.hash(this.center, this.rotX, this.rotY, this.rotZ, this.radius);
   }
 
   @Override

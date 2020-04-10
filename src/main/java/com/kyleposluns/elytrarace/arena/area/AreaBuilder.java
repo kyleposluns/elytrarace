@@ -5,7 +5,13 @@ import org.bukkit.util.Vector;
 
 public class AreaBuilder {
 
-  private Double radius;
+  private double radius;
+
+  private double rotX;
+
+  private double rotY;
+
+  private double rotZ;
 
   private Axis axis;
 
@@ -17,9 +23,12 @@ public class AreaBuilder {
 
 
   public AreaBuilder() {
-    this.radius = null;
+    this.radius = 0.0;
     this.axis = null;
     this.center = null;
+    this.rotX = 0.0;
+    this.rotY = 0.0;
+    this.rotZ = 0.0;
     this.position1 = null;
     this.position2 = null;
   }
@@ -39,6 +48,21 @@ public class AreaBuilder {
     return this;
   }
 
+  public AreaBuilder rotationX(double rotX) {
+    this.rotX = rotX;
+    return this;
+  }
+
+  public AreaBuilder rotationY(double rotY) {
+    this.rotY = rotY;
+    return this;
+  }
+
+  public AreaBuilder rotationZ(double rotZ) {
+    this.rotZ = rotZ;
+    return this;
+  }
+
   public AreaBuilder position1(Vector position) {
     this.position1 = position;
     return this;
@@ -50,7 +74,7 @@ public class AreaBuilder {
   }
 
   public Area build() {
-    if (this.radius != null) {
+    if (this.radius != 0) {
 
       if (this.center == null) {
         throw new IllegalStateException(
@@ -59,7 +83,7 @@ public class AreaBuilder {
       if (this.axis == null) {
         return new SphereArea(this.center, this.radius);
       } else {
-        return new CircleArea(this.center, this.axis, this.radius);
+        return new CircleArea(this.center, 0, this.rotX, this.rotY, this.rotZ);
       }
 
     } else {

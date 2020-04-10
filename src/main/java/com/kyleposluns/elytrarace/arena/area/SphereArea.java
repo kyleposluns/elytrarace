@@ -5,9 +5,9 @@ import org.bukkit.util.Vector;
 
 class SphereArea implements Area {
 
-  private final Vector center;
+  final Vector center;
 
-  private final double radius;
+  final double radius;
 
   public SphereArea(Vector center, double radius) {
     this.center = center;

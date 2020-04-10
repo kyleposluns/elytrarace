@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
 
@@ -26,7 +28,7 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
 
   private static final String DISPLAY_NAME = "display_name";
 
-  private static final String WORLD_ID = "world_id";
+  private static final String WORLD_NAME = "world_name";
 
   private static final String PITCH = "pitch";
 
@@ -48,15 +50,24 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
         UUID arenaId = UUID.fromString(rs.getString(ARENA_ID));
         String name = rs.getString(ARENA_NAME);
         String displayName = rs.getString(DISPLAY_NAME);
-        UUID worldId = UUID.fromString(rs.getString(WORLD_ID));
+        String worldName = rs.getString(WORLD_NAME);
         double x = rs.getDouble(X);
         double y = rs.getDouble(Y);
         double z = rs.getDouble(Z);
         float yaw = rs.getFloat(YAW);
         float pitch = rs.getFloat(PITCH);
-        Location loc = new Location(Bukkit.getWorld(worldId), x, y, z, yaw, pitch);
+        WorldCreator worldCreator = new WorldCreator(worldName);
+        World world = Bukkit.createWorld(worldCreator);
+
+        if (world == null) {
+          throw new IllegalArgumentException("There was an issue reading a world.");
+        }
+
+        Bukkit.getWorlds().add(world);
+
+        Location loc = new Location(world, x, y, z, yaw, pitch);
         List<Area> areas = new AreaAdapter(arenaId).deserialize(connection);
-        ArenaInfo info = new ArenaInfo(worldId, arenaId, loc, name, displayName, areas);
+        ArenaInfo info = new ArenaInfo(world.getUID(), arenaId, loc, name, displayName, areas);
         RecordBook records = new ArenaRecordBookDeserializer(arenaId).deserialize(connection);
         arenas.add(new ArenaImpl(info, records));
       }

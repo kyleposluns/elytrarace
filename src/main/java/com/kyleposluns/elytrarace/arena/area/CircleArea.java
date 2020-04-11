@@ -3,7 +3,7 @@ package com.kyleposluns.elytrarace.arena.area;
 import java.util.Objects;
 import org.bukkit.util.Vector;
 
-class CircleArea implements Area {
+class CircleArea extends AbstractArea {
 
   private Vector center;
 
@@ -15,7 +15,8 @@ class CircleArea implements Area {
 
   private double rotZ;
 
-  public CircleArea(Vector center, double radius, double rotX, double rotY, double rotZ) {
+  public CircleArea(AreaType type, Vector center, double radius, double rotX, double rotY, double rotZ) {
+    super(type);
     this.center = center;
     this.radius = radius;
     this.rotX = rotX;

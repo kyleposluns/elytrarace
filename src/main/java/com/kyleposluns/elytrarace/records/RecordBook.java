@@ -28,7 +28,11 @@ public interface RecordBook extends Iterable<Record> {
    * Find the top record in this book. A shortcut for getTopRecords(1).get(0).
    */
   default Record getTopRecord() {
-    return this.getTopRecords(1).get(0);
+    if (!this.getTopRecords(1).isEmpty()) {
+      return this.getTopRecords(1).get(0);
+    } else {
+      return null;
+    }
   }
 
   /**

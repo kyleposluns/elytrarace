@@ -6,6 +6,7 @@ import com.kyleposluns.elytrarace.database.GetDatabaseVisitor;
 import com.kyleposluns.elytrarace.database.sql.ElytraSQLCredentials;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 
 public class ERConfig {
 
@@ -25,9 +26,12 @@ public class ERConfig {
 
   private static final String PASSWORD = "password";
 
+  private final Plugin plugin;
+
   private Credentials credentials;
 
-  public ERConfig(FileConfiguration configuration) {
+  public ERConfig(Plugin plugin, FileConfiguration configuration) {
+    this.plugin = plugin;
     ConfigurationSection databaseSection = configuration.getConfigurationSection(DATABASE);
     if (databaseSection == null) {
       throw new IllegalStateException("Cannot connect to a database without required fields");
@@ -47,7 +51,7 @@ public class ERConfig {
   }
 
   public ElytraDatabase getDatabase() {
-    return this.credentials.visitCredentials(new GetDatabaseVisitor());
+    return this.credentials.visitCredentials(new GetDatabaseVisitor(this.plugin));
   }
 
 }

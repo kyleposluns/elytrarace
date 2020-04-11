@@ -23,6 +23,7 @@ public class RaceCommand extends AbstractCommand {
       raceCoordinator.beginTracking(player.getUniqueId(), arena);
       success(player, String.format("Begin a race on %s!", arena));
     } catch (Exception e) {
+      e.printStackTrace();
       failure(player, "There was an issue starting the race!");
     }
 

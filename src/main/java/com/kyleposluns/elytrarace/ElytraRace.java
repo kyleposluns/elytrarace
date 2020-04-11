@@ -23,10 +23,10 @@ public class ElytraRace extends JavaPlugin {
   @Override
   public void onEnable() {
     this.saveDefaultConfig();
-    ERConfig config = new ERConfig(this.getConfig());
+    ERConfig config = new ERConfig(this, this.getConfig());
     this.database = config.getDatabase();
     this.arenaManager = this.database.getArenaManager();
-    this.raceCoordinator = new RaceCoordinatorImpl(this, this.database, this.arenaManager);
+    this.raceCoordinator = new RaceCoordinatorImpl(this.arenaManager);
     this.getCommand("race")
         .setExecutor(new RaceCommand(this.raceCoordinator));
     this.getCommand("stoprace")

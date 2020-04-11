@@ -12,18 +12,22 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.UUID;
+import org.bukkit.plugin.Plugin;
 
 public class ElytraSQLDatabase implements ElytraDatabase {
 
+  private final Plugin plugin;
+
   private final Connection connection;
 
-  public ElytraSQLDatabase(Credentials credentials) {
+  public ElytraSQLDatabase(Plugin plugin, Credentials credentials) {
+    this.plugin = plugin;
     this.connection = credentials.visitCredentials(new CreateDriverVisitor());
   }
 
   @Override
   public ArenaManager getArenaManager() {
-    return new ArenaManagerAdapter().deserialize(this.connection);
+    return new ArenaManagerAdapter(this.plugin, this).deserialize(this.connection);
   }
 
   @Override

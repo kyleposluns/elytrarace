@@ -3,13 +3,14 @@ package com.kyleposluns.elytrarace.arena.area;
 import java.util.Objects;
 import org.bukkit.util.Vector;
 
-class SphereArea implements Area {
+class SphereArea extends AbstractArea {
 
   final Vector center;
 
   final double radius;
 
-  public SphereArea(Vector center, double radius) {
+  public SphereArea(AreaType type, Vector center, double radius) {
+    super(type);
     this.center = center;
     this.radius = radius;
   }

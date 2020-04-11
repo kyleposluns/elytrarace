@@ -3,13 +3,14 @@ package com.kyleposluns.elytrarace.arena.area;
 import java.util.Objects;
 import org.bukkit.util.Vector;
 
-class CuboidArea implements Area {
+class CuboidArea extends AbstractArea {
 
   private final Vector min;
 
   private final Vector max;
 
-  public CuboidArea(Vector pos1, Vector pos2) {
+  public CuboidArea(AreaType type, Vector pos1, Vector pos2) {
+    super(type);
     this.min = Vector.getMinimum(pos1, pos2);
     this.max = Vector.getMaximum(pos1, pos2);
   }

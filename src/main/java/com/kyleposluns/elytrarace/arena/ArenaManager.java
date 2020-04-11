@@ -1,5 +1,6 @@
 package com.kyleposluns.elytrarace.arena;
 
+import com.kyleposluns.elytrarace.tracking.RaceTracker;
 import java.util.List;
 
 /**
@@ -21,6 +22,9 @@ public interface ArenaManager {
    * @throws IllegalArgumentException If the arena doesn't exist.
    */
   Arena getArena(String arenaName) throws IllegalArgumentException;
+
+
+  RaceTracker getRaceTracker(String arena);
 
   /**
    * Find the list of all loaded arenas.

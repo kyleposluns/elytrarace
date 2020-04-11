@@ -6,6 +6,7 @@ import com.kyleposluns.elytrarace.arena.ArenaInfo;
 import com.kyleposluns.elytrarace.arena.ArenaManager;
 import com.kyleposluns.elytrarace.arena.ArenaManagerImpl;
 import com.kyleposluns.elytrarace.arena.area.Area;
+import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.database.sql.SQLDeserializer;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import java.sql.Connection;
@@ -19,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.plugin.Plugin;
 
 public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
 
@@ -39,6 +41,15 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
   private static final String Y = "y";
 
   private static final String Z = "z";
+
+  private final Plugin plugin;
+
+  private final ElytraDatabase database;
+
+  public ArenaManagerAdapter(Plugin plugin, ElytraDatabase database) {
+    this.plugin = plugin;
+    this.database = database;
+  }
 
   @Override
   public ArenaManager deserialize(Connection connection) {
@@ -69,7 +80,7 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
         List<Area> areas = new AreaAdapter(arenaId).deserialize(connection);
         ArenaInfo info = new ArenaInfo(world.getUID(), arenaId, loc, name, displayName, areas);
         RecordBook records = new ArenaRecordBookDeserializer(arenaId).deserialize(connection);
-        arenas.add(new ArenaImpl(info, records));
+        arenas.add(new ArenaImpl(this.plugin, this.database, info, records));
       }
     } catch (SQLException e) {
       e.printStackTrace();

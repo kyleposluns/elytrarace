@@ -1,9 +1,10 @@
 package com.kyleposluns.elytrarace.arena.area;
 
-import org.bukkit.Axis;
 import org.bukkit.util.Vector;
 
 public class AreaBuilder {
+
+  private AreaType type;
 
   private double radius;
 
@@ -22,6 +23,7 @@ public class AreaBuilder {
 
   public AreaBuilder() {
     this.radius = 0.0;
+    this.type = null;
     this.center = null;
     this.rotX = null;
     this.rotY = null;
@@ -65,7 +67,17 @@ public class AreaBuilder {
     return this;
   }
 
+  public AreaType type(AreaType type) {
+    this.type = type;
+    return null;
+  }
+
   public Area build() {
+    if (this.type == null) {
+      throw new IllegalStateException(
+          "Could not build an area with the provided information");
+    }
+
     if (this.radius != 0) {
 
       if (this.center == null) {
@@ -74,14 +86,14 @@ public class AreaBuilder {
       }
 
       if (this.rotX == null || this.rotY == null || this.rotZ == null) {
-        return new SphereArea(this.center, this.radius);
+        return new SphereArea(this.type, this.center, this.radius);
       } else {
-        return new CircleArea(this.center, this.radius, this.rotX, this.rotY, this.rotZ);
+        return new CircleArea(this.type, this.center, this.radius, this.rotX, this.rotY, this.rotZ);
       }
 
     } else {
       if (this.position1 != null && this.position2 != null) {
-        return new CuboidArea(this.position1, this.position2);
+        return new CuboidArea(this.type, this.position1, this.position2);
       } else {
         throw new IllegalStateException(
             "Could not build an area with the provided information.");

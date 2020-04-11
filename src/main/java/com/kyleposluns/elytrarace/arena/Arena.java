@@ -52,7 +52,9 @@ public interface Arena extends Listener {
    * @param database The database responsible for saving/loading data.
    * @return This arena's RaceTracker.
    */
-  RaceTracker createRaceTracker(Plugin plugin, ElytraDatabase database);
+  //RaceTracker createRaceTracker(Plugin plugin, ElytraDatabase database);
+
+  RaceTracker getRaceTracker();
 
   /**
    * Return an object responsible for keeping records about the fasting times in this arena.

@@ -12,6 +12,8 @@ import org.bukkit.plugin.Plugin;
 
 public class ArenaImpl implements Arena {
 
+  private final RaceTracker raceTracker;
+
   private final UUID arenaId;
 
   private final UUID worldId;
@@ -24,18 +26,18 @@ public class ArenaImpl implements Arena {
 
   private final String displayName;
 
-  private final List<Area> checkpoints;
-
-  private transient RaceTracker tracker;
-
-  public ArenaImpl(ArenaInfo info, RecordBook recordBook) {
+  public ArenaImpl(Plugin plugin, ElytraDatabase database, ArenaInfo info, RecordBook recordBook) {
     this.arenaId = info.getArenaId();
     this.worldId = info.getWorldId();
     this.spawn = info.getSpawn();
     this.recordBook = recordBook;
-    this.checkpoints = info.getAreas();
+    List<Area> checkpoints = info.getAreas();
     this.name = info.getName();
     this.displayName = info.getDisplayName();
+    this.raceTracker = new RaceTrackerImpl(plugin, database, this.arenaId, checkpoints,
+        this.recordBook,
+        this.spawn);
+    plugin.getServer().getPluginManager().registerEvents(this.raceTracker, plugin);
   }
 
   @Override
@@ -64,14 +66,8 @@ public class ArenaImpl implements Arena {
   }
 
   @Override
-  public RaceTracker createRaceTracker(Plugin plugin, ElytraDatabase database) {
-    if (this.tracker == null) {
-      this.tracker = new RaceTrackerImpl(plugin, database, this.arenaId, this.checkpoints,
-          this.recordBook,
-          this.spawn);
-      plugin.getServer().getPluginManager().registerEvents(this.tracker, plugin);
-    }
-    return this.tracker;
+  public RaceTracker getRaceTracker() {
+    return this.raceTracker;
   }
 
   @Override

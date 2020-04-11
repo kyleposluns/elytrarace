@@ -15,6 +15,8 @@ public interface Area {
    */
   boolean contains(Vector vector);
 
+  AreaType getType();
+
   /**
    * A function that adds extensibility for children of this object.
    *

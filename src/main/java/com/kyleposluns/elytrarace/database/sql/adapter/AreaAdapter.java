@@ -2,6 +2,7 @@ package com.kyleposluns.elytrarace.database.sql.adapter;
 
 import com.kyleposluns.elytrarace.arena.area.Area;
 import com.kyleposluns.elytrarace.arena.area.AreaBuilder;
+import com.kyleposluns.elytrarace.arena.area.AreaType;
 import com.kyleposluns.elytrarace.database.sql.SQLDeserializer;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -12,7 +13,10 @@ import java.util.List;
 import java.util.UUID;
 import org.bukkit.Axis;
 
+
 public class AreaAdapter implements SQLDeserializer<List<Area>> {
+
+  private static final String AREA_TYPE = "area_type";
 
   private static final String CENTER = "center_id";
 
@@ -43,6 +47,12 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
       ResultSet rs = statement.executeQuery();
       while (rs.next()) {
         AreaBuilder builder = new AreaBuilder();
+
+        AreaType type = AreaType.valueOf(rs.getString(AREA_TYPE));
+        if (!rs.wasNull()) {
+          builder.type(type);
+        }
+
         int centerId = rs.getInt(CENTER);
         if (!rs.wasNull()) {
           builder.center(new VectorDeserializer(centerId).deserialize(connection));

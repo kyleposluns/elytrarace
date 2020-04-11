@@ -13,27 +13,32 @@ public class DrawOutline implements AreaVisitor<List<Vector>> {
     this.granularity = granularity;
   }
 
+  public DrawOutline() {
+    this.granularity = -1;
+  }
+
   @Override
   public List<Vector> visitCuboid(CuboidArea cuboid) {
     List<Vector> vectors = new ArrayList<>();
+    double delta = this.granularity < 0 ? 1 : this.granularity;
     Vector min = cuboid.getMin();
     Vector max = cuboid.getMax();
 
-    for (double x = min.getX(); x < max.getX(); x = x + this.granularity) {
+    for (double x = min.getX(); x < max.getX(); x = x + delta) {
       vectors.add(new Vector(x, min.getY(), min.getZ()));
       vectors.add(new Vector(x, max.getY(), max.getZ()));
       vectors.add(new Vector(x, min.getY(), max.getZ()));
       vectors.add(new Vector(x, max.getY(), min.getZ()));
     }
 
-    for (double y = min.getY(); y < max.getY(); y = y + this.granularity) {
+    for (double y = min.getY(); y < max.getY(); y = y + delta) {
       vectors.add(new Vector(min.getX(), y, min.getZ()));
       vectors.add(new Vector(max.getX(), y, max.getZ()));
       vectors.add(new Vector(min.getX(), y, max.getZ()));
       vectors.add(new Vector(max.getX(), y, min.getZ()));
     }
 
-    for (double z = min.getZ(); z < max.getZ(); z = z + this.granularity) {
+    for (double z = min.getZ(); z < max.getZ(); z = z + delta) {
       vectors.add(new Vector(min.getX(), min.getY(), z));
       vectors.add(new Vector(max.getX(), max.getY(), z));
       vectors.add(new Vector(max.getX(), min.getY(), z));

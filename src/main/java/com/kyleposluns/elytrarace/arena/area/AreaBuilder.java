@@ -7,13 +7,11 @@ public class AreaBuilder {
 
   private double radius;
 
-  private double rotX;
+  private Double rotX;
 
-  private double rotY;
+  private Double rotY;
 
-  private double rotZ;
-
-  private Axis axis;
+  private Double rotZ;
 
   private Vector center;
 
@@ -24,22 +22,16 @@ public class AreaBuilder {
 
   public AreaBuilder() {
     this.radius = 0.0;
-    this.axis = null;
     this.center = null;
-    this.rotX = 0.0;
-    this.rotY = 0.0;
-    this.rotZ = 0.0;
+    this.rotX = null;
+    this.rotY = null;
+    this.rotZ = null;
     this.position1 = null;
     this.position2 = null;
   }
 
   public AreaBuilder radius(double radius) {
     this.radius = radius;
-    return this;
-  }
-
-  public AreaBuilder axis(Axis axis) {
-    this.axis = axis;
     return this;
   }
 
@@ -80,10 +72,11 @@ public class AreaBuilder {
         throw new IllegalStateException(
             "Could not build an area with the provided information");
       }
-      if (this.axis == null) {
+
+      if (this.rotX == null || this.rotY == null || this.rotZ == null) {
         return new SphereArea(this.center, this.radius);
       } else {
-        return new CircleArea(this.center, 0, this.rotX, this.rotY, this.rotZ);
+        return new CircleArea(this.center, this.radius, this.rotX, this.rotY, this.rotZ);
       }
 
     } else {

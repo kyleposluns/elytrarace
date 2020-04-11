@@ -43,50 +43,13 @@ class CircleArea implements Area {
     return this.rotZ;
   }
 
-  private Vector rotateOnXAxis(Vector vector, Vector center, double degrees) {
-    Vector copy = vector.clone().subtract(center);
-    double theta = Math.toRadians(degrees);
-    double newX = copy.getX();
-    double newY = (copy.getY() * Math.cos(theta)) - (copy.getZ() * Math.sin(theta));
-    double newZ = (copy.getZ() * Math.sin(theta)) + (copy.getZ() * Math.cos(theta));
-
-    return new Vector(newX, newY, newZ).add(center);
-  }
-
-  private Vector rotateOnZAxis(Vector vector, Vector center, double degrees) {
-    Vector copy = vector.clone().subtract(center);
-    double theta = Math.toRadians(degrees);
-
-    double newX = (copy.getX() * Math.cos(theta)) - (copy.getY() * Math.sin(theta));
-    double newY = (copy.getX() * Math.sin(theta)) + (copy.getY() * Math.cos(theta));
-    double newZ = copy.getZ();
-    return new Vector(newX, newY, newZ).add(center);
-  }
-
-  private Vector rotateOnYAxis(Vector vector, Vector center, double degrees) {
-    Vector copy = vector.clone().subtract(center);
-    double theta = Math.toRadians(degrees);
-    double newX = (copy.getX() * Math.cos(theta)) + (copy.getZ() * Math.sin(theta));
-    double newY = copy.getY();
-    double newZ = (copy.getX() * -1 * Math.sin(theta)) + (copy.getZ() * Math.cos(theta));
-    return new Vector(newX, newY, newZ).add(center);
-  }
-
-  private Vector rotate(Vector vector, Vector center) {
-    return rotateOnXAxis(
-        rotateOnYAxis(rotateOnZAxis(vector, center, -this.getRotZ()), center, -this.getRotY()),
-        center, -this.getRotX());
-  }
-
   @Override
   public boolean contains(Vector vector) {
-    Vector rotatedCenter = rotate(this.center, this.center);
+    Vector rotatedCenter = rotateZYX(this.center, this.center, -1 * this.rotX, -1 * this.rotY,
+        -1 * this.rotZ);
 
-    //System.out.println("Rotated center: " + rotatedCenter.toString());
-
-    Vector rotatedPoint = rotate(vector, this.center);
-
-    //System.out.println("Rotated point: " + rotatedPoint.toString());
+    Vector rotatedPoint = rotateZYX(vector, this.center, -1 * this.rotX, -1 * this.rotY,
+        -1 * this.rotZ);
 
     double distanceSquared =
         ((rotatedCenter.getY() - rotatedPoint.getY()) * (rotatedCenter.getY() - rotatedPoint
@@ -96,8 +59,7 @@ class CircleArea implements Area {
 
     double distance = Math.sqrt(distanceSquared);
 
-
-    return distance <= this.radius && Math.abs(rotatedCenter.getX() - rotatedPoint.getX()) <= 0.5;
+    return distance <= this.radius && Math.abs(rotatedCenter.getX() - rotatedPoint.getX()) <= 1.5;
   }
 
   @Override
@@ -126,5 +88,78 @@ class CircleArea implements Area {
   @Override
   public <R> R visitArea(AreaVisitor<R> visitor) {
     return visitor.visitCircle(this);
+  }
+
+
+  static Vector rotateZYX(Vector point, Vector center, double rotX, double rotY,
+      double rotZ) {
+    double theta = Math.toRadians(rotX);
+    double phi = Math.toRadians(rotY);
+    double psi = Math.toRadians(rotZ);
+    Vector v = point.clone().subtract(center);
+
+    double x1 = v.getX() * (Math.cos(phi) * Math.cos(psi));
+    double x2 = v.getY() * (-1 * Math.cos(phi) * Math.sin(psi));
+    double x3 = v.getZ() * (Math.sin(phi));
+
+    double newX = x1 + x2 + x3;
+
+    double y1 =
+        v.getX() * ((Math.sin(theta) * Math.sin(phi) * Math.cos(psi)) + (Math.cos(theta) * Math
+            .sin(psi)));
+    double y2 =
+        v.getY() * ((-1 * Math.sin(theta) * Math.sin(phi) * Math.sin(psi)) + (Math.cos(theta) * Math
+            .cos(theta)));
+    double y3 = v.getZ() * (-1 * Math.sin(theta) * Math.cos(phi));
+
+    double newY = y1 + y2 + y3;
+
+    double z1 =
+        v.getX() * ((-1 * Math.cos(theta) * Math.sin(phi) * Math.cos(psi)) + (Math.sin(theta) * Math
+            .sin(psi)));
+    double z2 =
+        v.getY() * ((Math.cos(theta) * Math.sin(phi) * Math.sin(psi)) + (Math.sin(theta) * Math
+            .cos(psi)));
+    double z3 = v.getZ() * (Math.cos(theta) * Math.cos(phi));
+
+    double newZ = z1 + z2 + z3;
+
+    return new Vector(newX, newY, newZ).add(center);
+  }
+
+
+  static Vector rotateXYZ(Vector point, Vector center, double rotX, double rotY,
+      double rotZ) {
+    double theta = Math.toRadians(rotX);
+    double phi = Math.toRadians(rotY);
+    double psi = Math.toRadians(rotZ);
+    Vector v = point.clone().subtract(center);
+
+    double x1 = v.getX() * (Math.cos(psi) * Math.cos(phi));
+    double x2 =
+        v.getY() * ((-1 * Math.sin(psi) * Math.cos(theta)) + (Math.cos(psi) * Math.sin(phi) * Math
+            .sin(theta)));
+    double x3 =
+        v.getZ() * ((Math.sin(psi) * Math.sin(theta)) + (Math.cos(psi) * Math.sin(phi) * Math
+            .cos(theta)));
+    double newX = x1 + x2 + x3;
+
+    double y1 = (v.getX() * (Math.sin(psi) * Math.cos(phi)));
+    double y2 = (v.getY() * ((Math.cos(psi) * Math.cos(theta)) + (Math.sin(psi) * Math.sin(phi)
+        * Math
+        .sin(theta))));
+    double y3 = (v.getZ() * ((-1 * Math.cos(psi) * Math.sin(theta)) + (Math.sin(psi) * Math.sin(phi)
+        * Math
+        .cos(theta))));
+
+    double newY = y1 + y2 + y3;
+
+    double z1 = (v.getX() * (-1 * Math.sin(phi)));
+    double z2 = (v.getY() * (Math.cos(phi) * Math.sin(theta)));
+    double z3 = (v.getZ() * (Math.cos(phi) * Math.cos(theta)));
+
+    double newZ = z1 + z2 + z3;
+
+    return new Vector(newX, newY, newZ).add(center);
   }
 }

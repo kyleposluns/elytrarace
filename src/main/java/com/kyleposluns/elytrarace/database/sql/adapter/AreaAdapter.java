@@ -18,7 +18,11 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
 
   private static final String RADIUS = "radius";
 
-  private static final String AXIS = "axis";
+  private static final String ROT_X = "rot_x";
+
+  private static final String ROT_Y = "rot_y";
+
+  private static final String ROT_Z = "rot_z";
 
   private static final String POSITION_1 = "pos1_id";
 
@@ -49,9 +53,18 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
           builder.radius(radius);
         }
 
-        String axis = rs.getString(AXIS);
+        double rotX = rs.getDouble(ROT_X);
         if (!rs.wasNull()) {
-          builder.axis(Axis.valueOf(axis));
+          builder.rotationX(rotX);
+        }
+
+        double rotY = rs.getDouble(ROT_Y);
+        if (!rs.wasNull()) {
+          builder.rotationY(rotY);
+        }
+        double rotZ = rs.getDouble(ROT_Z);
+        if (!rs.wasNull()) {
+          builder.rotationX(rotZ);
         }
 
         int pos1Id = rs.getInt(POSITION_1);

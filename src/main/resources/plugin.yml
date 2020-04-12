@@ -13,3 +13,6 @@ commands:
   arenas:
     description: List the arenas.
     usage: /<command>
+  leaderboard:
+    description: List the arenas.
+    usage: /<command> <arena>

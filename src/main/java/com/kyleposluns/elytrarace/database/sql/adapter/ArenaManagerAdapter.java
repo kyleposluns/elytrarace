@@ -1,5 +1,6 @@
 package com.kyleposluns.elytrarace.database.sql.adapter;
 
+import com.kyleposluns.elytrarace.MessageFormatter;
 import com.kyleposluns.elytrarace.arena.Arena;
 import com.kyleposluns.elytrarace.arena.ArenaImpl;
 import com.kyleposluns.elytrarace.arena.ArenaInfo;
@@ -46,8 +47,11 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
 
   private final ElytraDatabase database;
 
-  public ArenaManagerAdapter(Plugin plugin, ElytraDatabase database) {
+  private final MessageFormatter messageFormatter;
+
+  public ArenaManagerAdapter(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database) {
     this.plugin = plugin;
+    this.messageFormatter = messageFormatter;
     this.database = database;
   }
 
@@ -80,7 +84,7 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
         List<Area> areas = new AreaAdapter(arenaId).deserialize(connection);
         ArenaInfo info = new ArenaInfo(world.getUID(), arenaId, loc, name, displayName, areas);
         RecordBook records = new ArenaRecordBookDeserializer(arenaId).deserialize(connection);
-        arenas.add(new ArenaImpl(this.plugin, this.database, info, records));
+        arenas.add(new ArenaImpl(this.plugin, this.messageFormatter, this.database, info, records));
       }
     } catch (SQLException e) {
       e.printStackTrace();

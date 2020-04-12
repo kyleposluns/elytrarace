@@ -1,5 +1,6 @@
 package com.kyleposluns.elytrarace.command;
 
+import com.kyleposluns.elytrarace.MessageFormatter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,6 +8,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public abstract class AbstractCommand implements CommandExecutor {
+
+  protected MessageFormatter messageFormatter;
+
+  private String usage;
+
+  public AbstractCommand(MessageFormatter messageFormatter, String usage) {
+    this.messageFormatter = messageFormatter;
+    this.usage = usage;
+  }
+
 
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -28,16 +39,15 @@ public abstract class AbstractCommand implements CommandExecutor {
   protected abstract void onCommand(Player player, String[] args);
 
 
-  protected void usage(CommandSender sender, String message) {
-   sender.sendMessage(ChatColor.YELLOW + message);
+  protected void usage(CommandSender sender) {
+   sender.sendMessage(this.messageFormatter.getPrefix() + ChatColor.YELLOW + this.usage);
   }
 
   protected void success(CommandSender sender, String message) {
-    sender.sendMessage(ChatColor.GREEN + message);
+    sender.sendMessage(this.messageFormatter.getPrefix() + ChatColor.GREEN + message);
   }
 
   protected void failure(CommandSender sender, String message) {
-    sender.sendMessage(ChatColor.RED + message);
-  }
+    sender.sendMessage(this.messageFormatter.getPrefix() + ChatColor.RED + message);  }
 
 }

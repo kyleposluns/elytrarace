@@ -1,5 +1,6 @@
 package com.kyleposluns.elytrarace.tracking;
 
+import com.kyleposluns.elytrarace.MessageFormatter;
 import com.kyleposluns.elytrarace.arena.area.Area;
 import com.kyleposluns.elytrarace.arena.area.AreaType;
 import com.kyleposluns.elytrarace.arena.area.DrawOutline;
@@ -21,10 +22,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
@@ -54,10 +59,16 @@ public final class RaceTrackerImpl implements RaceTracker {
 
   private List<Vector> fastestPath;
 
-  public RaceTrackerImpl(Plugin plugin, ElytraDatabase database, UUID arenaId, List<Area> areas,
+  private final MessageFormatter messageFormatter;
+
+  private final ItemStack elytra;
+
+  public RaceTrackerImpl(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database,
+      UUID arenaId, List<Area> areas,
       RecordBook recordBook,
       Location spawn) {
     this.spawn = spawn;
+    this.messageFormatter = messageFormatter;
     this.recordBook = recordBook;
     this.arenaId = arenaId;
     this.database = database;
@@ -77,6 +88,14 @@ public final class RaceTrackerImpl implements RaceTracker {
         .orElseThrow();
     this.fastestPath = this.updateFastestPath();
     plugin.getServer().getPluginManager().registerEvents(this, plugin);
+
+    this.elytra = new ItemStack(Material.ELYTRA, 1);
+    ItemMeta meta = this.elytra.getItemMeta();
+    if (meta != null) {
+      meta.setUnbreakable(true);
+      this.elytra.setItemMeta(meta);
+    }
+
   }
 
 
@@ -167,9 +186,9 @@ public final class RaceTrackerImpl implements RaceTracker {
 
     if (this.start.contains(event.getFrom().toVector()) && !this.start
         .contains(event.getTo().toVector()) && !this.isRacing(playerId)) {
+      event.getPlayer().getInventory().setChestplate(this.elytra);
       this.startRace(playerId);
-      event.getPlayer().sendMessage(ChatColor.GREEN + "Good Luck!");
-
+      this.messageFormatter.sendPrefixedMessage(event.getPlayer(), ChatColor.GREEN + "Good Luck!");
     }
 
   }
@@ -192,7 +211,8 @@ public final class RaceTrackerImpl implements RaceTracker {
         .contains(event.getTo().toVector()) && this.playerCheckpointTracker
         .passedAllCheckpoints(playerId)) {
       this.finishRace(playerId);
-      event.getPlayer().sendMessage(ChatColor.GREEN + "Congratulations!");
+      this.messageFormatter
+          .sendPrefixedMessage(event.getPlayer(), ChatColor.GREEN + "Congratulations!");
       event.getPlayer().teleport(this.spawn);
 
     }
@@ -213,10 +233,13 @@ public final class RaceTrackerImpl implements RaceTracker {
       return;
     }
 
-    if (this.playerCheckpointTracker
+    if (!this.playerCheckpointTracker.passedAllCheckpoints(playerId) && this.playerCheckpointTracker
         .isInNextCheckpoint(playerId, event.getPlayer().getEyeLocation().toVector())) {
       this.playerCheckpointTracker.nextCheckpoint(playerId);
-      event.getPlayer().sendMessage(ChatColor.GREEN + "Checkpoint!");
+      event.getPlayer()
+          .playSound(event.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
+      this.messageFormatter.sendPrefixedMessage(event.getPlayer(), ChatColor.GREEN + "Checkpoint!");
+
     }
 
 
@@ -235,6 +258,8 @@ public final class RaceTrackerImpl implements RaceTracker {
       return;
     }
 
+
+
     if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()
         != Material.AIR) {
       this.endRace(player.getUniqueId());
@@ -242,4 +267,16 @@ public final class RaceTrackerImpl implements RaceTracker {
     }
   }
 
+  @EventHandler
+  public void onWeatherChange(WeatherChangeEvent event) {
+    if (!event.getWorld().equals(this.spawn.getWorld())) {
+      return;
+    }
+    boolean rain = event.toWeatherState();
+    if (rain) {
+      event.setCancelled(true);
+    }
+
+
+  }
 }

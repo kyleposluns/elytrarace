@@ -1,5 +1,6 @@
 package com.kyleposluns.elytrarace.database.sql;
 
+import com.kyleposluns.elytrarace.MessageFormatter;
 import com.kyleposluns.elytrarace.arena.ArenaManager;
 import com.kyleposluns.elytrarace.database.Credentials;
 import com.kyleposluns.elytrarace.database.CredentialsVisitor;
@@ -22,17 +23,22 @@ public class ElytraSQLDatabase implements ElytraDatabase {
 
   private final Connection connection;
 
+  private final MessageFormatter messageFormatter;
+
   private Map<RecordBook, Long> lastRecordBookSave;
 
-  public ElytraSQLDatabase(Plugin plugin, Credentials credentials) {
+  public ElytraSQLDatabase(Plugin plugin, MessageFormatter messageFormatter,
+      Credentials credentials) {
     this.plugin = plugin;
+    this.messageFormatter = messageFormatter;
     this.lastRecordBookSave = new ConcurrentHashMap<>();
     this.connection = credentials.visitCredentials(new CreateDriverVisitor());
   }
 
   @Override
   public ArenaManager getArenaManager() {
-    return new ArenaManagerAdapter(this.plugin, this).deserialize(this.connection);
+    return new ArenaManagerAdapter(this.plugin, this.messageFormatter, this)
+        .deserialize(this.connection);
   }
 
   @Override
@@ -63,14 +69,17 @@ public class ElytraSQLDatabase implements ElytraDatabase {
   }
 
   static class CreateDriverVisitor implements CredentialsVisitor<Connection> {
+
     @Override
     public Connection visitSQLDBCredentials(ElytraSQLCredentials sqlCredentials) {
       try {
         System.out.println(String
-                .format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC", sqlCredentials.getHostName(), sqlCredentials.getPort(),
-                    sqlCredentials.getDatabaseName()));
+            .format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC", sqlCredentials.getHostName(),
+                sqlCredentials.getPort(),
+                sqlCredentials.getDatabaseName()));
         return DriverManager.getConnection(String
-                .format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC", sqlCredentials.getHostName(), sqlCredentials.getPort(),
+                .format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC", sqlCredentials.getHostName(),
+                    sqlCredentials.getPort(),
                     sqlCredentials.getDatabaseName()), sqlCredentials.getUser(),
             sqlCredentials.getPassword());
       } catch (SQLException e) {

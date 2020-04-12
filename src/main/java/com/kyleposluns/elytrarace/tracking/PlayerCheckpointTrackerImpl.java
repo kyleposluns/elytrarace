@@ -31,15 +31,12 @@ public class PlayerCheckpointTrackerImpl implements PlayerCheckpointTracker {
   @Override
   public void nextCheckpoint(UUID playerId) {
     int i = this.currentCheckpoints.getOrDefault(playerId, 0);
-    if (i >= this.checkpoints.size() - 1) {
-      return;
-    }
     this.currentCheckpoints.put(playerId, i + 1);
   }
 
   @Override
   public boolean passedAllCheckpoints(UUID playerId) {
-    return this.currentCheckpoints.getOrDefault(playerId, 0) == this.checkpoints.size() - 1;
+    return this.currentCheckpoints.getOrDefault(playerId, 0) == this.checkpoints.size();
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.kyleposluns.elytrarace.arena;
 
+import com.kyleposluns.elytrarace.MessageFormatter;
 import com.kyleposluns.elytrarace.arena.area.Area;
 import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.records.RecordBook;
@@ -26,7 +27,7 @@ public class ArenaImpl implements Arena {
 
   private final String displayName;
 
-  public ArenaImpl(Plugin plugin, ElytraDatabase database, ArenaInfo info, RecordBook recordBook) {
+  public ArenaImpl(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database, ArenaInfo info, RecordBook recordBook) {
     this.arenaId = info.getArenaId();
     this.worldId = info.getWorldId();
     this.spawn = info.getSpawn();
@@ -34,7 +35,7 @@ public class ArenaImpl implements Arena {
     List<Area> checkpoints = info.getAreas();
     this.name = info.getName();
     this.displayName = info.getDisplayName();
-    this.raceTracker = new RaceTrackerImpl(plugin, database, this.arenaId, checkpoints,
+    this.raceTracker = new RaceTrackerImpl(plugin, messageFormatter, database, this.arenaId, checkpoints,
         this.recordBook,
         this.spawn);
     plugin.getServer().getPluginManager().registerEvents(this.raceTracker, plugin);

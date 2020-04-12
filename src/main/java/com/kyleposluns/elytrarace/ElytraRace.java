@@ -3,12 +3,14 @@ package com.kyleposluns.elytrarace;
 
 import com.kyleposluns.elytrarace.arena.ArenaManager;
 import com.kyleposluns.elytrarace.command.ArenasCommand;
+import com.kyleposluns.elytrarace.command.LeaderboardCommand;
 import com.kyleposluns.elytrarace.command.RaceCommand;
 import com.kyleposluns.elytrarace.command.StopRaceCommand;
 import com.kyleposluns.elytrarace.config.ERConfig;
 import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.game.RaceCoordinator;
 import com.kyleposluns.elytrarace.game.RaceCoordinatorImpl;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,17 +26,40 @@ public class ElytraRace extends JavaPlugin {
   public void onEnable() {
     this.saveDefaultConfig();
     ERConfig config = new ERConfig(this, this.getConfig());
+    MessageFormatter messageFormatter = config.getMessageFormatter();
     this.database = config.getDatabase();
     this.arenaManager = this.database.getArenaManager();
     this.raceCoordinator = new RaceCoordinatorImpl(this.arenaManager);
-    this.getCommand("race")
-        .setExecutor(new RaceCommand(this.raceCoordinator));
-    this.getCommand("stoprace")
-        .setExecutor(new StopRaceCommand(this.raceCoordinator));
-    this.getCommand("arenas")
-        .setExecutor(new ArenasCommand(this.arenaManager));
-  }
 
+    PluginCommand raceCommand = this.getCommand("race");
+    if (raceCommand != null) {
+      raceCommand.setExecutor(
+          new RaceCommand(messageFormatter, raceCommand.getUsage(), this.raceCoordinator));
+    }
+
+    PluginCommand stopRaceCommand = this.getCommand("stoprace");
+
+    if (stopRaceCommand != null) {
+      stopRaceCommand
+          .setExecutor(new StopRaceCommand(messageFormatter, stopRaceCommand.getUsage(),
+              this.raceCoordinator));
+    }
+
+    PluginCommand arenasCommand = this.getCommand("arenas");
+
+    if (arenasCommand != null) {
+      arenasCommand.setExecutor(
+          new ArenasCommand(messageFormatter, arenasCommand.getUsage(), this.arenaManager));
+    }
+
+    PluginCommand leaderboardCommand = this.getCommand("leaderboard");
+    if (leaderboardCommand != null) {
+      leaderboardCommand
+          .setExecutor(new LeaderboardCommand(messageFormatter, leaderboardCommand.getUsage(),
+              this.arenaManager));
+    }
+
+  }
 
   @Override
   public void onDisable() {
@@ -44,6 +69,5 @@ public class ElytraRace extends JavaPlugin {
     this.database.close();
     HandlerList.unregisterAll(this);
   }
-
 
 }

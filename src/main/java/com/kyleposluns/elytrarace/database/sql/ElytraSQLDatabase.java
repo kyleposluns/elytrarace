@@ -11,7 +11,9 @@ import com.kyleposluns.elytrarace.records.RecordBook;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.plugin.Plugin;
 
 public class ElytraSQLDatabase implements ElytraDatabase {
@@ -20,8 +22,11 @@ public class ElytraSQLDatabase implements ElytraDatabase {
 
   private final Connection connection;
 
+  private Map<RecordBook, Long> lastRecordBookSave;
+
   public ElytraSQLDatabase(Plugin plugin, Credentials credentials) {
     this.plugin = plugin;
+    this.lastRecordBookSave = new ConcurrentHashMap<>();
     this.connection = credentials.visitCredentials(new CreateDriverVisitor());
   }
 
@@ -32,7 +37,15 @@ public class ElytraSQLDatabase implements ElytraDatabase {
 
   @Override
   public void saveRecordBook(RecordBook recordBook) {
-    new RecordBookSerializer().serialize(this.connection, recordBook);
+    long last;
+    if (this.lastRecordBookSave.containsKey(recordBook)) {
+      last = this.lastRecordBookSave.get(recordBook);
+    } else {
+      last = -1;
+    }
+
+    new RecordBookSerializer(last).serialize(this.connection, recordBook);
+    this.lastRecordBookSave.put(recordBook, System.currentTimeMillis());
   }
 
   @Override

@@ -66,15 +66,19 @@ public final class RaceTrackerImpl implements RaceTracker {
         .flatMap(area -> area.visitArea(new DrawOutline()).stream()).collect(
             Collectors.toList());
     this.players = new HashSet<>();
-    this.playerTrackerThreadManager = new PlayerTrackerThreadManagerImpl(plugin, 0L, 10L);
-    this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 5L, 1);
-    this.playerCheckpointTracker = new PlayerCheckpointTrackerImpl(areas);
+    this.playerTrackerThreadManager = new PlayerTrackerThreadManagerImpl(plugin, 0L, 5L);
+    this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 5L, 4);
+    this.playerCheckpointTracker = new PlayerCheckpointTrackerImpl(
+        areas.stream().filter(area -> area.getType() == AreaType.CHECKPOINT).collect(
+            Collectors.toList()));
     this.start = areas.stream().filter(area -> area.getType() == AreaType.START).findFirst()
         .orElseThrow();
     this.goal = areas.stream().filter(area -> area.getType() == AreaType.END).findFirst()
         .orElseThrow();
     this.fastestPath = this.updateFastestPath();
+    plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
+
 
   private List<Vector> updateFastestPath() {
     Record record = this.recordBook.getTopRecord();
@@ -120,11 +124,10 @@ public final class RaceTrackerImpl implements RaceTracker {
   }
 
   private void finishRace(UUID playerId) {
-    this.endRace(playerId);
     long end = System.currentTimeMillis();
     long start = this.playerCheckpointTracker.getStartTime(playerId);
 
-    List<Vector> positions = this.playerTrackerThreadManager.getTrackedLocations(playerId);
+    List<Vector> positions = this.playerTrackerThreadManager.stopTracking(playerId);
     Record record = new RecordBuilder()
         .date(end)
         .time((int) (end - start))
@@ -134,13 +137,19 @@ public final class RaceTrackerImpl implements RaceTracker {
         .build();
     this.recordBook.report(record);
     this.database.saveRecordBook(this.recordBook);
+    this.endHelp(playerId);
   }
+
 
   @Override
   public void endRace(UUID playerId) {
+    this.playerTrackerThreadManager.stopTracking(playerId);
+    this.endHelp(playerId);
+  }
+
+  private void endHelp(UUID playerId) {
     this.playerParticleThreadManager.stopShowingParticles(playerId);
     this.playerCheckpointTracker.removePlayer(playerId);
-    this.playerTrackerThreadManager.stopTracking(playerId);
     this.fastestPath = this.updateFastestPath();
   }
 
@@ -157,7 +166,7 @@ public final class RaceTrackerImpl implements RaceTracker {
     }
 
     if (this.start.contains(event.getFrom().toVector()) && !this.start
-        .contains(event.getTo().toVector())) {
+        .contains(event.getTo().toVector()) && !this.isRacing(playerId)) {
       this.startRace(playerId);
       event.getPlayer().sendMessage(ChatColor.GREEN + "Good Luck!");
 
@@ -184,6 +193,7 @@ public final class RaceTrackerImpl implements RaceTracker {
         .passedAllCheckpoints(playerId)) {
       this.finishRace(playerId);
       event.getPlayer().sendMessage(ChatColor.GREEN + "Congratulations!");
+      event.getPlayer().teleport(this.spawn);
 
     }
 
@@ -196,6 +206,12 @@ public final class RaceTrackerImpl implements RaceTracker {
     }
 
     UUID playerId = event.getPlayer().getUniqueId();
+
+    if (!(this.isRacing(playerId)) || this.start
+        .contains(event.getPlayer().getLocation().toVector())
+        || this.goal.contains(event.getPlayer().getLocation().toVector())) {
+      return;
+    }
 
     if (this.playerCheckpointTracker
         .isInNextCheckpoint(playerId, event.getPlayer().getEyeLocation().toVector())) {
@@ -214,15 +230,15 @@ public final class RaceTrackerImpl implements RaceTracker {
 
     Player player = event.getPlayer();
 
-    if (!(this.isRacing(player.getUniqueId())) || this.start.contains(event.getTo().toVector())
+    if (!this.isRacing(player.getUniqueId()) || this.start.contains(event.getTo().toVector())
         || this.goal.contains(event.getTo().toVector())) {
       return;
     }
 
     if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()
         != Material.AIR) {
-      player.teleport(this.spawn);
       this.endRace(player.getUniqueId());
+      player.teleport(this.spawn);
     }
   }
 

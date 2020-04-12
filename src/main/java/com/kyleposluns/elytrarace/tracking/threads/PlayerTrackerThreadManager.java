@@ -8,8 +8,6 @@ public interface PlayerTrackerThreadManager {
 
   void trackLocations(UUID playerId);
 
-  void stopTracking(UUID playerId);
-
-  List<Vector> getTrackedLocations(UUID playerId);
+  List<Vector> stopTracking(UUID playerId);
 
 }

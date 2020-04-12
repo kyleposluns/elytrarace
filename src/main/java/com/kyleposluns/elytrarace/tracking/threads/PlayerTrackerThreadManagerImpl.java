@@ -1,10 +1,10 @@
 package com.kyleposluns.elytrarace.tracking.threads;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -29,45 +29,37 @@ public final class PlayerTrackerThreadManagerImpl implements PlayerTrackerThread
     this.scheduler = plugin.getServer().getScheduler();
     this.delay = delay;
     this.duration = duration;
-    this.playerThreads = new ConcurrentHashMap<>();
-    this.playerLocations = new ConcurrentHashMap<>();
+    this.playerThreads = new HashMap<>();
+    this.playerLocations = new HashMap<>();
   }
 
   @Override
   public void trackLocations(UUID playerId) {
-    if (!playerLocations.containsKey(playerId)) {
-      this.playerLocations.put(playerId, new ArrayList<>());
+    if (playerThreads.containsKey(playerId)) {
+      stopTracking(playerId);
     }
 
-    if (this.playerThreads.containsKey(playerId)) {
-      this.stopTracking(playerId);
-    }
-
-    this.playerThreads.put(playerId, this.scheduler.scheduleSyncRepeatingTask(this.plugin, () -> {
+    this.playerLocations.put(playerId, new ArrayList<>());
+    int id = this.scheduler.scheduleSyncRepeatingTask(this.plugin, () -> {
       Player player = this.plugin.getServer().getPlayer(playerId);
       if (player == null) {
         return;
       }
       this.playerLocations.get(playerId).add(player.getEyeLocation().toVector());
-    }, this.delay, this.duration));
+    }, this.delay, this.duration);
+    this.playerThreads.put(playerId, id);
   }
 
   @Override
-  public void stopTracking(UUID playerId) {
+  public List<Vector> stopTracking(UUID playerId) {
     if (!playerThreads.containsKey(playerId)) {
-      throw new IllegalStateException(
-          String.format("The player %s is not being tracked.", playerId.toString()));
+      return new ArrayList<>();
     }
-    this.scheduler.cancelTask(this.playerThreads.get(playerId));
-    this.playerThreads.remove(playerId);
-  }
+    int id = this.playerThreads.remove(playerId);
 
-  @Override
-  public List<Vector> getTrackedLocations(UUID playerId) {
-    if (!playerThreads.containsKey(playerId)) {
-      throw new IllegalStateException(
-          String.format("The player %s is not being tracked.", playerId.toString()));
-    }
-    return this.playerLocations.get(playerId);
+    this.scheduler.cancelTask(id);
+    List<Vector> positions = this.playerLocations.remove(playerId);
+
+    return positions != null && !positions.isEmpty() ? positions : new ArrayList<>();
   }
 }

@@ -49,7 +49,9 @@ public class PlayerPositionAdapter implements SQLDeserializer<List<Vector>>,
 
   @Override
   public void serialize(Connection connection, List<Vector> vectors) {
+
     try {
+
       connection.setAutoCommit(false);
 
       for (Vector vector : vectors) {
@@ -62,12 +64,14 @@ public class PlayerPositionAdapter implements SQLDeserializer<List<Vector>>,
           statement.setDouble(4, vector.getZ());
           statement.execute();
 
+
         } catch (SQLException e) {
           e.printStackTrace();
         }
       }
       connection.commit();
     } catch (SQLException exception) {
+      exception.printStackTrace();
       try {
         connection.rollback();
       } catch (SQLException e) {

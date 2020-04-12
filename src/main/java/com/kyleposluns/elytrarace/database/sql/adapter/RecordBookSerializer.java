@@ -10,12 +10,22 @@ import java.sql.Types;
 
 public class RecordBookSerializer implements SQLSerializer<RecordBook> {
 
+  private long lastSerialization;
+
+
+  public RecordBookSerializer(long lastSerialization) {
+    this.lastSerialization = lastSerialization;
+  }
+
+
   @Override
   public void serialize(Connection connection, RecordBook recordBook) {
     try {
       connection.setAutoCommit(false);
       for (Record record : recordBook) {
-        new RecordAdapter().serialize(connection, record);
+        if (record.getDate() > this.lastSerialization || this.lastSerialization < 0) {
+          new RecordAdapter().serialize(connection, record);
+        }
       }
       connection.commit();
       connection.setAutoCommit(true);
@@ -33,6 +43,7 @@ public class RecordBookSerializer implements SQLSerializer<RecordBook> {
 
     @Override
     public void serialize(Connection connection, Record object) {
+      int recordId = -1;
       try (CallableStatement recordInfo = connection
           .prepareCall("{CALL add_record(?, ?, ?, ?, ?)}")) {
         recordInfo.setString(1, object.getPlayerId().toString());
@@ -41,12 +52,11 @@ public class RecordBookSerializer implements SQLSerializer<RecordBook> {
         recordInfo.setInt(4, object.getTime());
         recordInfo.registerOutParameter(5, Types.INTEGER);
         recordInfo.execute();
-        int recordId = recordInfo.getInt(5);
-        new PlayerPositionAdapter(recordId).serialize(connection, object.getPositions());
+        recordId = recordInfo.getInt(5);
       } catch (SQLException e) {
         e.printStackTrace();
       }
-
+      new PlayerPositionAdapter(recordId).serialize(connection, object.getPositions());
     }
   }
 }

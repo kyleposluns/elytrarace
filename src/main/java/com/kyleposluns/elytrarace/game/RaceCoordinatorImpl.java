@@ -2,9 +2,9 @@ package com.kyleposluns.elytrarace.game;
 
 import com.kyleposluns.elytrarace.arena.Arena;
 import com.kyleposluns.elytrarace.arena.ArenaManager;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -16,7 +16,7 @@ public class RaceCoordinatorImpl implements RaceCoordinator {
 
   public RaceCoordinatorImpl(ArenaManager arenaManager) {
     this.arenaManager = arenaManager;
-    this.playerArenaMap = new HashMap<>();
+    this.playerArenaMap = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -61,6 +61,10 @@ public class RaceCoordinatorImpl implements RaceCoordinator {
 
   @Override
   public void untrackAll() {
-    this.playerArenaMap.keySet().forEach(this::stopTracking);
+    for (UUID playerId : this.playerArenaMap.keySet()) {
+      String arena = this.playerArenaMap.get(playerId);
+      this.arenaManager.getRaceTracker(arena).unTrack(playerId);
+    }
+    this.playerArenaMap.clear();
   }
 }

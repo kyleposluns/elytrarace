@@ -1,10 +1,10 @@
 package com.kyleposluns.elytrarace.tracking.threads;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -35,7 +35,7 @@ public final class PlayerParticleThreadManagerImpl implements PlayerParticleThre
     this.duration = duration;
     this.count = count;
     this.scheduler = this.plugin.getServer().getScheduler();
-    this.playerThreads = new HashMap<>();
+    this.playerThreads = new ConcurrentHashMap<>();
   }
 
   @Override

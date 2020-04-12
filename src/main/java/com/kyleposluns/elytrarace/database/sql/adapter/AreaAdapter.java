@@ -32,7 +32,7 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
 
   private static final String POSITION_2 = "pos2_id";
 
-  private static final String ORDER = "checkpoint_order";
+  private static final String CHECKPOINT_ORDINAL = "checkpoint_ordinal";
 
   private final UUID arenaId;
 
@@ -55,7 +55,7 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
           builder.type(type);
         }
 
-        int order = rs.getInt(ORDER);
+        int order = rs.getInt(CHECKPOINT_ORDINAL);
         if (!rs.wasNull()) {
           builder.order(order);
         }
@@ -79,9 +79,10 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
         if (!rs.wasNull()) {
           builder.rotationY(rotY);
         }
+
         double rotZ = rs.getDouble(ROT_Z);
         if (!rs.wasNull()) {
-          builder.rotationX(rotZ);
+          builder.rotationZ(rotZ);
         }
 
         int pos1Id = rs.getInt(POSITION_1);

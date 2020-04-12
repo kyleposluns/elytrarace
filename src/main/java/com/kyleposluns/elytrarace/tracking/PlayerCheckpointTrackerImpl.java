@@ -30,7 +30,11 @@ public class PlayerCheckpointTrackerImpl implements PlayerCheckpointTracker {
 
   @Override
   public void nextCheckpoint(UUID playerId) {
-    this.currentCheckpoints.put(playerId, this.currentCheckpoints.getOrDefault(playerId, 0) + 1);
+    int i = this.currentCheckpoints.getOrDefault(playerId, 0);
+    if (i >= this.checkpoints.size() - 1) {
+      return;
+    }
+    this.currentCheckpoints.put(playerId, i + 1);
   }
 
   @Override
@@ -51,9 +55,9 @@ public class PlayerCheckpointTrackerImpl implements PlayerCheckpointTracker {
 
   @Override
   public long getStartTime(UUID playerId) {
-    if (!this.isFlying(playerId)) {
+    if (!this.startTime.containsKey(playerId)) {
       throw new IllegalArgumentException(
-          String.format("Player %s is not flying", playerId.toString()));
+          String.format("Do not have %s start time on file.", playerId.toString()));
     }
 
     return this.startTime.get(playerId);

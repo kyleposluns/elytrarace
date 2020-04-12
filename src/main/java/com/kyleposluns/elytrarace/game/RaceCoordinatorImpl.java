@@ -52,15 +52,6 @@ public class RaceCoordinatorImpl implements RaceCoordinator {
   }
 
   @Override
-  public long getCurrentTime(UUID playerId) throws IllegalArgumentException {
-    if (!this.playerArenaMap.containsKey(playerId)) {
-      throw new IllegalArgumentException(
-          String.format("The player %s is not being tracked.", playerId.toString()));
-    }
-    return this.arenaManager.getRaceTracker(this.playerArenaMap.get(playerId)).getCurrentTime(playerId);
-  }
-
-  @Override
   public void stopTracking(UUID playerId) {
     if (this.playerArenaMap.containsKey(playerId)) {
       this.arenaManager.getRaceTracker(this.playerArenaMap.get(playerId)).unTrack(playerId);

@@ -2,7 +2,9 @@ package com.kyleposluns.elytrarace.tracking;
 
 
 import java.util.UUID;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  * Object responsible for tracking a player during their run at the race.
@@ -46,14 +48,5 @@ public interface RaceTracker extends Listener {
    */
   void endRace(UUID playerId);
 
-  /**
-   * Gets the current runtime of the player's run if the player is not currently racing this will
-   * throw an IllegalArgumentException.
-   *
-   * @param playerId The ID of the player.
-   * @return The time of the player.
-   * @throws IllegalArgumentException if the player is not currently racing.
-   */
-  long getCurrentTime(UUID playerId) throws IllegalArgumentException;
 
 }

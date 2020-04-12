@@ -9,8 +9,8 @@ class CuboidArea extends AbstractArea {
 
   private final Vector max;
 
-  public CuboidArea(AreaType type, Vector pos1, Vector pos2) {
-    super(type);
+  public CuboidArea(AreaType type, int order, Vector pos1, Vector pos2) {
+    super(type, order);
     this.min = Vector.getMinimum(pos1, pos2);
     this.max = Vector.getMaximum(pos1, pos2);
   }

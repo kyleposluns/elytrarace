@@ -1,26 +1,26 @@
 package com.kyleposluns.elytrarace.tracking;
 
 import com.kyleposluns.elytrarace.arena.area.Area;
+import com.kyleposluns.elytrarace.arena.area.AreaType;
 import com.kyleposluns.elytrarace.arena.area.DrawOutline;
 import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.records.Record;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.kyleposluns.elytrarace.records.RecordBuilder;
+import com.kyleposluns.elytrarace.tracking.threads.PlayerParticleThreadManager;
+import com.kyleposluns.elytrarace.tracking.threads.PlayerParticleThreadManagerImpl;
+import com.kyleposluns.elytrarace.tracking.threads.PlayerTrackerThreadManager;
+import com.kyleposluns.elytrarace.tracking.threads.PlayerTrackerThreadManagerImpl;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.bukkit.Bukkit;
+import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,23 +28,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-public class RaceTrackerImpl implements RaceTracker {
-
-  private final Set<UUID> tracking;
-
-  private final Map<UUID, Long> startTimes;
-
-  private final List<Area> areas;
-
-  private final Map<UUID, Integer> playerCheckpoints;
-
-  private final Map<UUID, Integer> locationTrackingThreads;
-
-  private final Map<UUID, Integer> particleThreads;
-
-  private final Map<UUID, List<Vector>> trackedLocations;
-
-  private List<Vector> fastestPath;
+public final class RaceTrackerImpl implements RaceTracker {
 
   private final Location spawn;
 
@@ -54,98 +38,62 @@ public class RaceTrackerImpl implements RaceTracker {
 
   private final UUID arenaId;
 
-  private final Plugin plugin;
+  private final PlayerTrackerThreadManager playerTrackerThreadManager;
 
+  private final PlayerParticleThreadManager playerParticleThreadManager;
 
+  private final PlayerCheckpointTracker playerCheckpointTracker;
+
+  private final List<Vector> checkpointParticles;
+
+  private final Area start;
+
+  private final Area goal;
+
+  private final Set<UUID> players;
+
+  private List<Vector> fastestPath;
 
   public RaceTrackerImpl(Plugin plugin, ElytraDatabase database, UUID arenaId, List<Area> areas,
       RecordBook recordBook,
       Location spawn) {
-    this.plugin = plugin;
-    this.database = database;
-    this.arenaId = arenaId;
-    this.tracking = new HashSet<>();
-    this.startTimes = new HashMap<>();
-    this.locationTrackingThreads = new HashMap<>();
-    this.particleThreads = new HashMap<>();
-    this.areas = areas;
-    this.trackedLocations = new HashMap<>();
-    this.playerCheckpoints = new HashMap<>();
     this.spawn = spawn;
     this.recordBook = recordBook;
-    Record top = this.recordBook.getTopRecord();
-    if (top == null) {
-      this.fastestPath = new ArrayList<>();
+    this.arenaId = arenaId;
+    this.database = database;
+    this.checkpointParticles = areas.stream()
+        .filter(area -> area.getType() == AreaType.CHECKPOINT)
+        .flatMap(area -> area.visitArea(new DrawOutline()).stream()).collect(
+            Collectors.toList());
+    this.players = new HashSet<>();
+    this.playerTrackerThreadManager = new PlayerTrackerThreadManagerImpl(plugin, 0L, 10L);
+    this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 5L, 1);
+    this.playerCheckpointTracker = new PlayerCheckpointTrackerImpl(areas);
+    this.start = areas.stream().filter(area -> area.getType() == AreaType.START).findFirst()
+        .orElseThrow();
+    this.goal = areas.stream().filter(area -> area.getType() == AreaType.END).findFirst()
+        .orElseThrow();
+    this.fastestPath = this.updateFastestPath();
+  }
+
+  private List<Vector> updateFastestPath() {
+    Record record = this.recordBook.getTopRecord();
+    if (record == null) {
+      return new ArrayList<>();
     } else {
-      this.fastestPath = this.recordBook.getTopRecord().getPositions();
+      return record.getPositions();
     }
   }
 
-  private void nextCheckpoint(UUID playerId) {
-    int next = this.playerCheckpoints.get(playerId) + 1;
-    this.playerCheckpoints.put(playerId, next);
-  }
-
-  @Override
-  public void startRace(UUID playerId) {
-    this.startTimes.put(playerId, System.currentTimeMillis());
-    this.playerCheckpoints.put(playerId, 1);
-    this.trackedLocations.put(playerId, new ArrayList<>());
-    this.locationTrackingThreads
-        .put(playerId, plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-          Player player = this.plugin.getServer().getPlayer(playerId);
-          if (player == null) {
-            return;
-          }
-          Vector position = player.getLocation().toVector();
-          this.trackedLocations.get(playerId).add(position);
-        }, 0L, 10L));
-    this.particleThreads
-        .put(playerId, plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-          Player player = Bukkit.getPlayer(playerId);
-          if (player == null) {
-            return;
-          }
-          DustOptions ringDustOptions = new DustOptions(Color.fromRGB(255, 0, 0), 1);
-          for (Area area : this.areas) {
-            for (Vector v : area.visitArea(new DrawOutline())) {
-              player.spawnParticle(Particle.REDSTONE,
-                  new Location(player.getWorld(), v.getX(), v.getY(), v.getZ()), 4, ringDustOptions);
-            }
-          }
-          DustOptions fastestDustOptions = new DustOptions(Color.fromRGB(255, 0, 0), 1);
-          for (Vector v : this.fastestPath) {
-            player.spawnParticle(Particle.REDSTONE,
-                new Location(player.getWorld(), v.getX(), v.getY(), v.getZ()), 4, fastestDustOptions);
-          }
-
-        }, 0L, 5L));
-  }
-
-  @Override
-  public void endRace(UUID playerId) {
-    this.startTimes.remove(playerId);
-    this.playerCheckpoints.remove(playerId);
-    this.trackedLocations.remove(playerId);
-    this.plugin.getServer().getScheduler().cancelTask(this.locationTrackingThreads.get(playerId));
-    this.locationTrackingThreads.remove(playerId);
-    this.database.saveRecordBook(this.recordBook);
-    Record top = this.recordBook.getTopRecord();
-    if (top == null) {
-      this.fastestPath = new ArrayList<>();
-    } else {
-      this.fastestPath = this.recordBook.getTopRecord().getPositions();
-    }
-  }
 
   @Override
   public boolean isRacing(UUID playerId) {
-    return this.startTimes.containsKey(playerId);
+    return this.playerCheckpointTracker.isFlying(playerId);
   }
 
   @Override
   public void track(UUID playerId) {
-    this.tracking.add(playerId);
+    this.players.add(playerId);
   }
 
   @Override
@@ -153,19 +101,92 @@ public class RaceTrackerImpl implements RaceTracker {
     if (this.isRacing(playerId)) {
       this.endRace(playerId);
     }
-    this.tracking.remove(playerId);
+    this.players.remove(playerId);
   }
 
   @Override
   public boolean isTracking(UUID playerId) {
-    return this.tracking.contains(playerId);
+    return players.contains(playerId);
   }
 
   @Override
-  public long getCurrentTime(UUID playerId) throws IllegalArgumentException {
-    return Optional.of(this.startTimes.get(playerId))
-        .orElseThrow(() -> new IllegalArgumentException(
-            String.format("The player %s is not currently racing.", playerId.toString())));
+  public void startRace(UUID playerId) {
+    this.playerCheckpointTracker.addPlayer(playerId);
+    this.playerParticleThreadManager.showParticles(playerId, Color.RED, this.checkpointParticles);
+    if (!this.fastestPath.isEmpty()) {
+      this.playerParticleThreadManager.showParticles(playerId, Color.YELLOW, this.fastestPath);
+    }
+    this.playerTrackerThreadManager.trackLocations(playerId);
+  }
+
+  private void finishRace(UUID playerId) {
+    this.endRace(playerId);
+    long end = System.currentTimeMillis();
+    long start = this.playerCheckpointTracker.getStartTime(playerId);
+
+    List<Vector> positions = this.playerTrackerThreadManager.getTrackedLocations(playerId);
+    Record record = new RecordBuilder()
+        .date(end)
+        .time((int) (end - start))
+        .playerId(playerId)
+        .arenaId(this.arenaId)
+        .positions(positions)
+        .build();
+    this.recordBook.report(record);
+    this.database.saveRecordBook(this.recordBook);
+  }
+
+  @Override
+  public void endRace(UUID playerId) {
+    this.playerParticleThreadManager.stopShowingParticles(playerId);
+    this.playerCheckpointTracker.removePlayer(playerId);
+    this.playerTrackerThreadManager.stopTracking(playerId);
+    this.fastestPath = this.updateFastestPath();
+  }
+
+  @EventHandler
+  public void onLeaveStart(PlayerMoveEvent event) {
+    if (event.getTo() == null || event.getFrom().toVector().equals(event.getTo().toVector())) {
+      return;
+    }
+
+    UUID playerId = event.getPlayer().getUniqueId();
+
+    if (!this.isTracking(playerId)) {
+      return;
+    }
+
+    if (this.start.contains(event.getFrom().toVector()) && !this.start
+        .contains(event.getTo().toVector())) {
+      this.startRace(playerId);
+      event.getPlayer().sendMessage(ChatColor.GREEN + "Good Luck!");
+
+    }
+
+  }
+
+
+  @EventHandler
+  public void onEnterGoal(PlayerMoveEvent event) {
+
+    if (event.getTo() == null || event.getFrom().toVector().equals(event.getTo().toVector())) {
+      return;
+    }
+
+    UUID playerId = event.getPlayer().getUniqueId();
+
+    if (!this.isRacing(playerId)) {
+      return;
+    }
+
+    if (!this.goal.contains(event.getFrom().toVector()) && this.goal
+        .contains(event.getTo().toVector()) && this.playerCheckpointTracker
+        .passedAllCheckpoints(playerId)) {
+      this.finishRace(playerId);
+      event.getPlayer().sendMessage(ChatColor.GREEN + "Congratulations!");
+
+    }
+
   }
 
   @EventHandler
@@ -176,52 +197,29 @@ public class RaceTrackerImpl implements RaceTracker {
 
     UUID playerId = event.getPlayer().getUniqueId();
 
-    Area area = this.areas.get(this.playerCheckpoints.getOrDefault(playerId, 0));
-    if (!this.isTracking(playerId) || (area.contains(event.getFrom().toVector()) && !area
-        .contains(event.getTo().toVector()))) {
-      return;
+    if (this.playerCheckpointTracker
+        .isInNextCheckpoint(playerId, event.getPlayer().getEyeLocation().toVector())) {
+      this.playerCheckpointTracker.nextCheckpoint(playerId);
+      event.getPlayer().sendMessage(ChatColor.GREEN + "Checkpoint!");
     }
 
-    if (!this.isRacing(playerId)) {
-      this.startRace(playerId);
-      event.getPlayer().sendMessage(ChatColor.GREEN + "Good Luck!");
-    } else {
-      if (this.playerCheckpoints.get(playerId) == this.playerCheckpoints.size() - 1) {
-        long date = System.currentTimeMillis();
-        int time = (int) (date - this.startTimes.get(playerId));
-        Record record = new RecordBuilder()
-            .arenaId(this.arenaId)
-            .playerId(playerId)
-            .time(time)
-            .date(date)
-            .positions(this.trackedLocations.getOrDefault(playerId, new ArrayList<>()))
-            .build();
-        this.recordBook.report(record);
-        this.endRace(playerId);
-        event.getPlayer().sendMessage(ChatColor.GREEN + "Finished!");
 
-      } else {
-        this.nextCheckpoint(playerId);
-        event.getPlayer().sendMessage(ChatColor.GREEN + "Checkpoint!");
-      }
-    }
   }
 
   @EventHandler
-  public void onMove(PlayerMoveEvent event) {
+  public void onFall(PlayerMoveEvent event) {
     if (event.getTo() == null || event.getFrom().toVector().equals(event.getTo().toVector())) {
       return;
     }
 
     Player player = event.getPlayer();
-    Area start = this.areas.get(0);
 
-
-    if (!(this.isRacing(player.getUniqueId())) || start.contains(player.getLocation().toVector())) {
+    if (!(this.isRacing(player.getUniqueId())) || this.start.contains(event.getTo().toVector())
+        || this.goal.contains(event.getTo().toVector())) {
       return;
     }
 
-    if (player.getLocation().subtract(0, 2, 0).getBlock().getRelative(BlockFace.DOWN).getType()
+    if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()
         != Material.AIR) {
       player.teleport(this.spawn);
       this.endRace(player.getUniqueId());

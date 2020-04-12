@@ -26,15 +26,6 @@ public interface RaceCoordinator extends Listener {
    */
   Arena getCurrentArena(UUID playerId) throws IllegalArgumentException;
 
-
-  /**
-   * Get the current time of the player.
-   * @param playerId The id of the player.
-   * @return The amount of time in seconds.
-   * @throws IllegalArgumentException If the player is not being tracked.
-   */
-  long getCurrentTime(UUID playerId) throws IllegalArgumentException;
-
   /**
    * Stops tracking the player no matter which arena they're in. This is a No-op if the player is
    * not being tracked.

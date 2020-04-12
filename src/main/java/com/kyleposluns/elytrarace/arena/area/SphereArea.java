@@ -9,8 +9,8 @@ class SphereArea extends AbstractArea {
 
   final double radius;
 
-  public SphereArea(AreaType type, Vector center, double radius) {
-    super(type);
+  public SphereArea(AreaType type, int order, Vector center, double radius) {
+    super(type, order);
     this.center = center;
     this.radius = radius;
   }

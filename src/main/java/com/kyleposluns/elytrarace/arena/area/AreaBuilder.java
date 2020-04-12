@@ -20,6 +20,8 @@ public class AreaBuilder {
 
   private Vector position2;
 
+  private int order;
+
 
   public AreaBuilder() {
     this.radius = 0.0;
@@ -30,6 +32,12 @@ public class AreaBuilder {
     this.rotZ = null;
     this.position1 = null;
     this.position2 = null;
+    this.order = -1;
+  }
+
+  public AreaBuilder order(int order) {
+    this.order = order;
+    return this;
   }
 
   public AreaBuilder radius(double radius) {
@@ -73,7 +81,7 @@ public class AreaBuilder {
   }
 
   public Area build() {
-    if (this.type == null) {
+    if (this.type == null || this.order < 0) {
       throw new IllegalStateException(
           "Could not build an area with the provided information");
     }
@@ -86,14 +94,15 @@ public class AreaBuilder {
       }
 
       if (this.rotX == null || this.rotY == null || this.rotZ == null) {
-        return new SphereArea(this.type, this.center, this.radius);
+        return new SphereArea(this.type, this.order, this.center, this.radius);
       } else {
-        return new CircleArea(this.type, this.center, this.radius, this.rotX, this.rotY, this.rotZ);
+        return new CircleArea(this.type, this.order, this.center, this.radius, this.rotX, this.rotY,
+            this.rotZ);
       }
 
     } else {
       if (this.position1 != null && this.position2 != null) {
-        return new CuboidArea(this.type, this.position1, this.position2);
+        return new CuboidArea(this.type, this.order, this.position1, this.position2);
       } else {
         throw new IllegalStateException(
             "Could not build an area with the provided information.");

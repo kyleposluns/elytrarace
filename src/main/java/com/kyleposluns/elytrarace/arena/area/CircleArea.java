@@ -15,8 +15,8 @@ class CircleArea extends AbstractArea {
 
   private double rotZ;
 
-  public CircleArea(AreaType type, Vector center, double radius, double rotX, double rotY, double rotZ) {
-    super(type);
+  public CircleArea(AreaType type, int order, Vector center, double radius, double rotX, double rotY, double rotZ) {
+    super(type, order);
     this.center = center;
     this.radius = radius;
     this.rotX = rotX;

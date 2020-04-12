@@ -5,7 +5,7 @@ import org.bukkit.util.Vector;
 /**
  * Represents an area in space.
  */
-public interface Area {
+public interface Area extends Comparable<Area> {
 
   /**
    * Determines if a 3-dimensional coordinate is in this area.

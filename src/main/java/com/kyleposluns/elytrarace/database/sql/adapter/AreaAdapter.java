@@ -9,9 +9,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.Axis;
 
 
 public class AreaAdapter implements SQLDeserializer<List<Area>> {
@@ -32,6 +32,8 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
 
   private static final String POSITION_2 = "pos2_id";
 
+  private static final String ORDER = "checkpoint_order";
+
   private final UUID arenaId;
 
   public AreaAdapter(UUID arenaId) {
@@ -51,6 +53,11 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
         AreaType type = AreaType.valueOf(rs.getString(AREA_TYPE));
         if (!rs.wasNull()) {
           builder.type(type);
+        }
+
+        int order = rs.getInt(ORDER);
+        if (!rs.wasNull()) {
+          builder.order(order);
         }
 
         int centerId = rs.getInt(CENTER);
@@ -96,7 +103,8 @@ public class AreaAdapter implements SQLDeserializer<List<Area>> {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+    Collections.sort(areas);
 
-    return areas;
+    return Collections.unmodifiableList(areas);
   }
 }

@@ -5,12 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
@@ -25,6 +20,8 @@ public final class PlayerParticleThreadManagerImpl implements PlayerParticleThre
 
   private Map<UUID, List<Integer>> playerThreads;
 
+  private Map<UUID, List<ParticleDisplay>> particleHandlers;
+
   private Plugin plugin;
 
   private BukkitScheduler scheduler;
@@ -36,6 +33,7 @@ public final class PlayerParticleThreadManagerImpl implements PlayerParticleThre
     this.count = count;
     this.scheduler = this.plugin.getServer().getScheduler();
     this.playerThreads = new ConcurrentHashMap<>();
+    this.particleHandlers = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -44,24 +42,34 @@ public final class PlayerParticleThreadManagerImpl implements PlayerParticleThre
       this.playerThreads.put(playerId, new ArrayList<>());
     }
 
-    this.playerThreads.get(playerId).add(this.scheduler.scheduleSyncRepeatingTask(this.plugin,
-        () -> {
-          Player player = Bukkit.getPlayer(playerId);
-          if (player == null) {
-            return;
-          }
-          DustOptions ringDustOptions = new DustOptions(color, 1);
-          for (Vector v : locations) {
-            player.spawnParticle(Particle.REDSTONE,
-                new Location(player.getWorld(), v.getX(), v.getY(), v.getZ()), this.count,
-                ringDustOptions);
-          }
-        }, this.delay, this.duration));
+    ParticleDisplay display = new ParticleDisplay(playerId, color, locations, this.count);
+    if (!this.particleHandlers.containsKey(playerId)) {
+      this.particleHandlers.put(playerId, new ArrayList<>());
+    }
+    this.particleHandlers.get(playerId).add(display);
+
+
+    this.playerThreads.get(playerId)
+        .add(this.scheduler.scheduleSyncRepeatingTask(this.plugin, display
+            , this.delay, this.duration));
+  }
+
+  @Override
+  public void flashColor(UUID playerId, Color color, long delay) {
+    for (ParticleDisplay display : this.particleHandlers.getOrDefault(playerId, new ArrayList<>())) {
+      Color oldColor = display.getOldColor();
+      display.setColor(color);
+      this.scheduler.scheduleSyncDelayedTask(this.plugin, () -> display.setColor(oldColor), delay);
+    }
+
+
   }
 
   @Override
   public void stopShowingParticles(UUID playerId) {
-    this.playerThreads.getOrDefault(playerId, new ArrayList<>()).forEach(id -> scheduler.cancelTask(id));
+    this.playerThreads.getOrDefault(playerId, new ArrayList<>())
+        .forEach(id -> scheduler.cancelTask(id));
+    this.particleHandlers.remove(playerId);
     this.playerThreads.remove(playerId);
   }
 }

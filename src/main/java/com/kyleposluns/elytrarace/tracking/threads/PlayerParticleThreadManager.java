@@ -9,6 +9,8 @@ public interface PlayerParticleThreadManager {
 
   void showParticles(UUID playerId, Color color, List<Vector> locations);
 
+  void flashColor(UUID playerId, Color color, long delay);
+
   void stopShowingParticles(UUID playerId);
 
 }

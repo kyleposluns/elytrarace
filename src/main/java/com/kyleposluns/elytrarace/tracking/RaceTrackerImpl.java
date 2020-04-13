@@ -78,7 +78,7 @@ public final class RaceTrackerImpl implements RaceTracker {
             Collectors.toList());
     this.players = new HashSet<>();
     this.playerTrackerThreadManager = new PlayerTrackerThreadManagerImpl(plugin, 0L, 5L);
-    this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 5L, 4);
+    this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 3L, 4);
     this.playerCheckpointTracker = new PlayerCheckpointTrackerImpl(
         areas.stream().filter(area -> area.getType() == AreaType.CHECKPOINT).collect(
             Collectors.toList()));
@@ -142,7 +142,7 @@ public final class RaceTrackerImpl implements RaceTracker {
     this.playerTrackerThreadManager.trackLocations(playerId);
   }
 
-  private void finishRace(UUID playerId) {
+  private long finishRace(UUID playerId) {
     long end = System.currentTimeMillis();
     long start = this.playerCheckpointTracker.getStartTime(playerId);
 
@@ -157,6 +157,7 @@ public final class RaceTrackerImpl implements RaceTracker {
     this.recordBook.report(record);
     this.database.saveRecordBook(this.recordBook);
     this.endHelp(playerId);
+    return end - start;
   }
 
 
@@ -210,9 +211,12 @@ public final class RaceTrackerImpl implements RaceTracker {
     if (!this.goal.contains(event.getFrom().toVector()) && this.goal
         .contains(event.getTo().toVector()) && this.playerCheckpointTracker
         .passedAllCheckpoints(playerId)) {
-      this.finishRace(playerId);
+      long time = this.finishRace(playerId);
       this.messageFormatter
-          .sendPrefixedMessage(event.getPlayer(), ChatColor.GREEN + "Congratulations!");
+          .sendPrefixedMessage(event.getPlayer(),
+              ChatColor.GREEN + "Congratulations!\n" + ChatColor.YELLOW + "Time: "
+                  + this.messageFormatter
+                  .formatTime(time));
       event.getPlayer().teleport(this.spawn);
 
     }
@@ -238,7 +242,7 @@ public final class RaceTrackerImpl implements RaceTracker {
       this.playerCheckpointTracker.nextCheckpoint(playerId);
       event.getPlayer()
           .playSound(event.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
-      this.messageFormatter.sendPrefixedMessage(event.getPlayer(), ChatColor.GREEN + "Checkpoint!");
+      this.playerParticleThreadManager.flashColor(playerId, Color.fromRGB(0x23CB23), 6L);
 
     }
 
@@ -257,8 +261,6 @@ public final class RaceTrackerImpl implements RaceTracker {
         || this.goal.contains(event.getTo().toVector())) {
       return;
     }
-
-
 
     if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()
         != Material.AIR) {

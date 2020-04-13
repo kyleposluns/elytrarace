@@ -3,7 +3,6 @@ package com.kyleposluns.elytrarace.records;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.util.Vector;
 
 public class RecordBookBuilder {
 
@@ -18,9 +17,8 @@ public class RecordBookBuilder {
     return this;
   }
 
-  public RecordBookBuilder record(UUID playerId, UUID arenaId, long date, int time,
-      List<Vector> positions) {
-    this.records.add(new RecordImpl(playerId, arenaId, date, time, positions));
+  public RecordBookBuilder record(UUID playerId, UUID arenaId, long date, int time) {
+    this.records.add(new RecordImpl(playerId, arenaId, date, time));
     return this;
   }
 

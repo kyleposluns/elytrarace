@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import org.bukkit.Color;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
@@ -37,12 +40,12 @@ public final class PlayerParticleThreadManagerImpl implements PlayerParticleThre
   }
 
   @Override
-  public void showParticles(UUID playerId, Color color, List<Vector> locations) {
+  public void showParticles(UUID playerId, Color color, Function<Player, List<Vector>> locations) {
     if (!this.playerThreads.containsKey(playerId)) {
       this.playerThreads.put(playerId, new ArrayList<>());
     }
 
-    ParticleDisplay display = new ParticleDisplay(playerId, color, locations, this.count);
+    ParticleDisplay display = new ParticleDisplay(playerId, color, this.count, locations);
     if (!this.particleHandlers.containsKey(playerId)) {
       this.particleHandlers.put(playerId, new ArrayList<>());
     }

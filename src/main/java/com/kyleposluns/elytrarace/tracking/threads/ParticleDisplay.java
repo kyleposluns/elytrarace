@@ -2,6 +2,7 @@ package com.kyleposluns.elytrarace.tracking.threads;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -16,11 +17,11 @@ public class ParticleDisplay implements Runnable {
 
   private Color color;
 
-  private final List<Vector> locations;
-
   private final int count;
 
-  public ParticleDisplay(UUID playerId, Color color, List<Vector> locations, int count) {
+  private final Function<Player, List<Vector>> locations;
+
+  public ParticleDisplay(UUID playerId, Color color, int count, Function<Player, List<Vector>> locations) {
     this.playerId = playerId;
     this.color = color;
     this.locations = locations;
@@ -42,7 +43,7 @@ public class ParticleDisplay implements Runnable {
       return;
     }
     DustOptions ringDustOptions = new DustOptions(color, 1);
-    for (Vector v : locations) {
+    for (Vector v : locations.apply(player)) {
       player.spawnParticle(Particle.REDSTONE,
           new Location(player.getWorld(), v.getX(), v.getY(), v.getZ()), this.count,
           ringDustOptions);

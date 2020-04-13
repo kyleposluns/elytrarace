@@ -14,14 +14,11 @@ class RecordImpl implements Record {
 
   private final int time;
 
-  private final List<Vector> positions;
-
-  RecordImpl(UUID playerId, UUID arenaId, long date, int time, List<Vector> positions) {
+  RecordImpl(UUID playerId, UUID arenaId, long date, int time) {
     this.playerId = playerId;
     this.arenaId = arenaId;
     this.date = date;
     this.time = time;
-    this.positions = positions;
   }
 
   @Override
@@ -42,11 +39,6 @@ class RecordImpl implements Record {
   @Override
   public int getTime() {
     return this.time;
-  }
-
-  @Override
-  public List<Vector> getPositions() {
-    return List.copyOf(this.positions);
   }
 
   @Override

@@ -3,7 +3,7 @@ package com.kyleposluns.elytrarace.tracking;
 import java.util.UUID;
 import org.bukkit.util.Vector;
 
-public interface PlayerCheckpointTracker {
+public interface CheckpointTracker {
 
   boolean isInNextCheckpoint(UUID playerId, Vector position);
 
@@ -18,5 +18,7 @@ public interface PlayerCheckpointTracker {
   long getStartTime(UUID playerId);
 
   void removePlayer(UUID playerId);
+
+  <R> R visitCheckpointTracker(CheckpointTrackerVisitor<R> visitor);
 
 }

@@ -68,7 +68,7 @@ public class DrawOutline implements AreaVisitor<List<Vector>> {
 
   @Override
   public List<Vector> visitCircle(CircleArea circle) {
-    double deltaTheta = this.granularity < 0 ? Math.PI / 30 : this.granularity;
+    double deltaTheta = this.granularity < 0 ? Math.PI / 24 : this.granularity;
     List<Vector> vectors = new ArrayList<>();
 
     for (double a = 0; a < Math.PI * 2; a += deltaTheta) {

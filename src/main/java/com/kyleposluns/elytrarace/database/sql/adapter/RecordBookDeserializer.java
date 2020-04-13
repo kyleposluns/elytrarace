@@ -17,8 +17,6 @@ public abstract class RecordBookDeserializer implements SQLDeserializer<RecordBo
 
   protected static final String PLAYER_ID = "player_id";
 
-  private static final String RECORD_ID = "record_id";
-
   private static final String DATE = "date_millis";
 
   private static final String SECONDS = "seconds";
@@ -40,13 +38,11 @@ public abstract class RecordBookDeserializer implements SQLDeserializer<RecordBo
       statement.setString(1, this.id.toString());
       ResultSet rs = statement.executeQuery();
       while (rs.next()) {
-        int recordId = rs.getInt(RECORD_ID);
         UUID arenaId = UUID.fromString(rs.getString(ARENA_ID));
         UUID playerId = UUID.fromString(rs.getString(PLAYER_ID));
         long date = rs.getLong(DATE);
         int seconds = rs.getInt(SECONDS);
-        List<Vector> positionList = new PlayerPositionAdapter(recordId).deserialize(connection);
-        builder.record(playerId, arenaId, date, seconds, positionList);
+        builder.record(playerId, arenaId, date, seconds);
       }
     } catch (SQLException e) {
       e.printStackTrace();

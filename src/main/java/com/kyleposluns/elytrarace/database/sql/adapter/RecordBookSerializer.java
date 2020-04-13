@@ -6,17 +6,14 @@ import com.kyleposluns.elytrarace.records.RecordBook;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Types;
 
 public class RecordBookSerializer implements SQLSerializer<RecordBook> {
 
   private long lastSerialization;
 
-
   public RecordBookSerializer(long lastSerialization) {
     this.lastSerialization = lastSerialization;
   }
-
 
   @Override
   public void serialize(Connection connection, RecordBook recordBook) {
@@ -43,20 +40,16 @@ public class RecordBookSerializer implements SQLSerializer<RecordBook> {
 
     @Override
     public void serialize(Connection connection, Record object) {
-      int recordId = -1;
       try (CallableStatement recordInfo = connection
-          .prepareCall("{CALL add_record(?, ?, ?, ?, ?)}")) {
+          .prepareCall("{CALL add_record(?, ?, ?, ?)}")) {
         recordInfo.setString(1, object.getPlayerId().toString());
         recordInfo.setString(2, object.getArenaId().toString());
         recordInfo.setLong(3, object.getDate());
         recordInfo.setInt(4, object.getTime());
-        recordInfo.registerOutParameter(5, Types.INTEGER);
         recordInfo.execute();
-        recordId = recordInfo.getInt(5);
       } catch (SQLException e) {
         e.printStackTrace();
       }
-      new PlayerPositionAdapter(recordId).serialize(connection, object.getPositions());
     }
   }
 }

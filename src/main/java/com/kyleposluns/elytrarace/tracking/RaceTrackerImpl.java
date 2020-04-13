@@ -3,16 +3,12 @@ package com.kyleposluns.elytrarace.tracking;
 import com.kyleposluns.elytrarace.MessageFormatter;
 import com.kyleposluns.elytrarace.arena.area.Area;
 import com.kyleposluns.elytrarace.arena.area.AreaType;
-import com.kyleposluns.elytrarace.arena.area.DrawOutline;
 import com.kyleposluns.elytrarace.database.ElytraDatabase;
 import com.kyleposluns.elytrarace.records.Record;
 import com.kyleposluns.elytrarace.records.RecordBook;
 import com.kyleposluns.elytrarace.records.RecordBuilder;
 import com.kyleposluns.elytrarace.tracking.threads.PlayerParticleThreadManager;
 import com.kyleposluns.elytrarace.tracking.threads.PlayerParticleThreadManagerImpl;
-import com.kyleposluns.elytrarace.tracking.threads.PlayerTrackerThreadManager;
-import com.kyleposluns.elytrarace.tracking.threads.PlayerTrackerThreadManagerImpl;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,13 +39,9 @@ public final class RaceTrackerImpl implements RaceTracker {
 
   private final UUID arenaId;
 
-  private final PlayerTrackerThreadManager playerTrackerThreadManager;
-
   private final PlayerParticleThreadManager playerParticleThreadManager;
 
-  private final PlayerCheckpointTracker playerCheckpointTracker;
-
-  private final List<Vector> checkpointParticles;
+  private final CheckpointTracker checkpointTracker;
 
   private final Area start;
 
@@ -57,14 +49,14 @@ public final class RaceTrackerImpl implements RaceTracker {
 
   private final Set<UUID> players;
 
-  private List<Vector> fastestPath;
+  private final List<Vector> path;
 
   private final MessageFormatter messageFormatter;
 
   private final ItemStack elytra;
 
   public RaceTrackerImpl(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database,
-      UUID arenaId, List<Area> areas,
+      UUID arenaId, List<Area> areas, List<Vector> path,
       RecordBook recordBook,
       Location spawn) {
     this.spawn = spawn;
@@ -72,21 +64,20 @@ public final class RaceTrackerImpl implements RaceTracker {
     this.recordBook = recordBook;
     this.arenaId = arenaId;
     this.database = database;
-    this.checkpointParticles = areas.stream()
+    this.path = path;
+   /* this.checkpointParticles = areas.stream()
         .filter(area -> area.getType() == AreaType.CHECKPOINT)
         .flatMap(area -> area.visitArea(new DrawOutline()).stream()).collect(
-            Collectors.toList());
+            Collectors.toList());*/
     this.players = new HashSet<>();
-    this.playerTrackerThreadManager = new PlayerTrackerThreadManagerImpl(plugin, 0L, 5L);
-    this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 3L, 4);
-    this.playerCheckpointTracker = new PlayerCheckpointTrackerImpl(
+    this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 5L, 1);
+    this.checkpointTracker = new CheckpointTrackerImpl(
         areas.stream().filter(area -> area.getType() == AreaType.CHECKPOINT).collect(
             Collectors.toList()));
     this.start = areas.stream().filter(area -> area.getType() == AreaType.START).findFirst()
         .orElseThrow();
     this.goal = areas.stream().filter(area -> area.getType() == AreaType.END).findFirst()
         .orElseThrow();
-    this.fastestPath = this.updateFastestPath();
     plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
     this.elytra = new ItemStack(Material.ELYTRA, 1);
@@ -99,19 +90,9 @@ public final class RaceTrackerImpl implements RaceTracker {
   }
 
 
-  private List<Vector> updateFastestPath() {
-    Record record = this.recordBook.getTopRecord();
-    if (record == null) {
-      return new ArrayList<>();
-    } else {
-      return record.getPositions();
-    }
-  }
-
-
   @Override
   public boolean isRacing(UUID playerId) {
-    return this.playerCheckpointTracker.isFlying(playerId);
+    return this.checkpointTracker.isFlying(playerId);
   }
 
   @Override
@@ -134,25 +115,24 @@ public final class RaceTrackerImpl implements RaceTracker {
 
   @Override
   public void startRace(UUID playerId) {
-    this.playerCheckpointTracker.addPlayer(playerId);
-    this.playerParticleThreadManager.showParticles(playerId, Color.RED, this.checkpointParticles);
-    if (!this.fastestPath.isEmpty()) {
-      this.playerParticleThreadManager.showParticles(playerId, Color.YELLOW, this.fastestPath);
+    this.checkpointTracker.addPlayer(playerId);
+    this.playerParticleThreadManager.showParticles(playerId, Color.RED,
+        new GetDisplayedParticleLocations(this.checkpointTracker, 2));
+
+    if (!this.path.isEmpty()) {
+      this.playerParticleThreadManager
+          .showParticles(playerId, Color.YELLOW, (player) -> this.path);
     }
-    this.playerTrackerThreadManager.trackLocations(playerId);
   }
 
   private long finishRace(UUID playerId) {
     long end = System.currentTimeMillis();
-    long start = this.playerCheckpointTracker.getStartTime(playerId);
-
-    List<Vector> positions = this.playerTrackerThreadManager.stopTracking(playerId);
+    long start = this.checkpointTracker.getStartTime(playerId);
     Record record = new RecordBuilder()
         .date(end)
         .time((int) (end - start))
         .playerId(playerId)
         .arenaId(this.arenaId)
-        .positions(positions)
         .build();
     this.recordBook.report(record);
     this.database.saveRecordBook(this.recordBook);
@@ -163,14 +143,12 @@ public final class RaceTrackerImpl implements RaceTracker {
 
   @Override
   public void endRace(UUID playerId) {
-    this.playerTrackerThreadManager.stopTracking(playerId);
     this.endHelp(playerId);
   }
 
   private void endHelp(UUID playerId) {
     this.playerParticleThreadManager.stopShowingParticles(playerId);
-    this.playerCheckpointTracker.removePlayer(playerId);
-    this.fastestPath = this.updateFastestPath();
+    this.checkpointTracker.removePlayer(playerId);
   }
 
   @EventHandler
@@ -209,7 +187,7 @@ public final class RaceTrackerImpl implements RaceTracker {
     }
 
     if (!this.goal.contains(event.getFrom().toVector()) && this.goal
-        .contains(event.getTo().toVector()) && this.playerCheckpointTracker
+        .contains(event.getTo().toVector()) && this.checkpointTracker
         .passedAllCheckpoints(playerId)) {
       long time = this.finishRace(playerId);
       this.messageFormatter
@@ -237,12 +215,12 @@ public final class RaceTrackerImpl implements RaceTracker {
       return;
     }
 
-    if (!this.playerCheckpointTracker.passedAllCheckpoints(playerId) && this.playerCheckpointTracker
+    if (!this.checkpointTracker.passedAllCheckpoints(playerId) && this.checkpointTracker
         .isInNextCheckpoint(playerId, event.getPlayer().getEyeLocation().toVector())) {
-      this.playerCheckpointTracker.nextCheckpoint(playerId);
+      this.checkpointTracker.nextCheckpoint(playerId);
       event.getPlayer()
           .playSound(event.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
-      this.playerParticleThreadManager.flashColor(playerId, Color.fromRGB(0x23CB23), 6L);
+      this.playerParticleThreadManager.flashColor(playerId, Color.fromRGB(0x23CB23), 10L);
 
     }
 

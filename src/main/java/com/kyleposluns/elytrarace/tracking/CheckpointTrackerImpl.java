@@ -7,20 +7,31 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.util.Vector;
 
-public class PlayerCheckpointTrackerImpl implements PlayerCheckpointTracker {
+public class CheckpointTrackerImpl implements CheckpointTracker {
 
-  private List<Area> checkpoints;
+  private final List<Area> checkpoints;
 
-  private Map<UUID, Long> startTime;
+  private final Map<UUID, Long> startTime;
 
-  private Map<UUID, Integer> currentCheckpoints;
+  private final Map<UUID, Integer> currentCheckpoints;
 
-  public PlayerCheckpointTrackerImpl(List<Area> areas) {
+  public CheckpointTrackerImpl(List<Area> areas) {
     this.checkpoints = areas;
     this.currentCheckpoints = new ConcurrentHashMap<>();
     this.startTime = new ConcurrentHashMap<>();
   }
 
+  List<Area> getCheckpoints() {
+    return List.copyOf(checkpoints);
+  }
+
+  Map<UUID, Long> getStartTimeMap() {
+    return Map.copyOf(this.startTime);
+  }
+
+  Map<UUID, Integer> getCurrentCheckpointMap() {
+    return Map.copyOf(this.currentCheckpoints);
+  }
 
   @Override
   public boolean isInNextCheckpoint(UUID playerId, Vector position) {
@@ -63,5 +74,10 @@ public class PlayerCheckpointTrackerImpl implements PlayerCheckpointTracker {
   @Override
   public void removePlayer(UUID playerId) {
     this.currentCheckpoints.remove(playerId);
+  }
+
+  @Override
+  public <R> R visitCheckpointTracker(CheckpointTrackerVisitor<R> visitor) {
+    return visitor.visitCheckpointTrackerImpl(this);
   }
 }

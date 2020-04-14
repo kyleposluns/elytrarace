@@ -22,6 +22,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
 
@@ -84,7 +85,8 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
         List<Area> areas = new AreaAdapter(arenaId).deserialize(connection);
         ArenaInfo info = new ArenaInfo(world.getUID(), arenaId, loc, name, displayName, areas);
         RecordBook records = new ArenaRecordBookDeserializer(arenaId).deserialize(connection);
-        arenas.add(new ArenaImpl(this.plugin, this.messageFormatter, this.database, info, records));
+        List<Vector> path = new ArenaPathAdapter(arenaId).deserialize(connection);
+        arenas.add(new ArenaImpl(this.plugin, this.messageFormatter, this.database, info, records, path));
       }
     } catch (SQLException e) {
       e.printStackTrace();

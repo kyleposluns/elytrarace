@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 public class ArenaImpl implements Arena {
 
@@ -27,7 +28,8 @@ public class ArenaImpl implements Arena {
 
   private final String displayName;
 
-  public ArenaImpl(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database, ArenaInfo info, RecordBook recordBook) {
+  public ArenaImpl(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database,
+      ArenaInfo info, RecordBook recordBook, List<Vector> path) {
     this.arenaId = info.getArenaId();
     this.worldId = info.getWorldId();
     this.spawn = info.getSpawn();
@@ -35,7 +37,8 @@ public class ArenaImpl implements Arena {
     List<Area> checkpoints = info.getAreas();
     this.name = info.getName();
     this.displayName = info.getDisplayName();
-    this.raceTracker = new RaceTrackerImpl(plugin, messageFormatter, database, this.arenaId, checkpoints,
+    this.raceTracker = new RaceTrackerImpl(plugin, messageFormatter, database, this.arenaId,
+        checkpoints, path,
         this.recordBook,
         this.spawn);
     plugin.getServer().getPluginManager().registerEvents(this.raceTracker, plugin);

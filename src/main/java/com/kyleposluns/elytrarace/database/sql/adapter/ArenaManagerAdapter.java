@@ -50,7 +50,8 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
 
   private final MessageFormatter messageFormatter;
 
-  public ArenaManagerAdapter(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database) {
+  public ArenaManagerAdapter(Plugin plugin, MessageFormatter messageFormatter,
+      ElytraDatabase database) {
     this.plugin = plugin;
     this.messageFormatter = messageFormatter;
     this.database = database;
@@ -72,21 +73,22 @@ public class ArenaManagerAdapter implements SQLDeserializer<ArenaManager> {
         double z = rs.getDouble(Z);
         float yaw = rs.getFloat(YAW);
         float pitch = rs.getFloat(PITCH);
-        WorldCreator worldCreator = new WorldCreator(worldName);
-        World world = Bukkit.createWorld(worldCreator);
-
+        World world = Bukkit.getWorld(worldName);
         if (world == null) {
-          throw new IllegalArgumentException("There was an issue reading a world.");
+          WorldCreator worldCreator = new WorldCreator(worldName);
+          world = Bukkit.createWorld(worldCreator);
+          if (world == null) {
+            throw new IllegalArgumentException("There was an issue reading a world.");
+          }
+          Bukkit.getWorlds().add(world);
         }
-
-        Bukkit.getWorlds().add(world);
-
         Location loc = new Location(world, x, y, z, yaw, pitch);
         List<Area> areas = new AreaAdapter(arenaId).deserialize(connection);
         ArenaInfo info = new ArenaInfo(world.getUID(), arenaId, loc, name, displayName, areas);
         RecordBook records = new ArenaRecordBookDeserializer(arenaId).deserialize(connection);
         List<Vector> path = new ArenaPathAdapter(arenaId).deserialize(connection);
-        arenas.add(new ArenaImpl(this.plugin, this.messageFormatter, this.database, info, records, path));
+        arenas.add(
+            new ArenaImpl(this.plugin, this.messageFormatter, this.database, info, records, path));
       }
     } catch (SQLException e) {
       e.printStackTrace();

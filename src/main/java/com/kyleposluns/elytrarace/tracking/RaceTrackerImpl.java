@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -23,6 +24,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -55,10 +57,13 @@ public final class RaceTrackerImpl implements RaceTracker {
 
   private final ItemStack elytra;
 
+  private Plugin plugin;
+
   public RaceTrackerImpl(Plugin plugin, MessageFormatter messageFormatter, ElytraDatabase database,
       UUID arenaId, List<Area> areas, List<Vector> path,
       RecordBook recordBook,
       Location spawn) {
+    this.plugin = plugin;
     this.spawn = spawn;
     this.messageFormatter = messageFormatter;
     this.recordBook = recordBook;
@@ -195,7 +200,7 @@ public final class RaceTrackerImpl implements RaceTracker {
               ChatColor.GREEN + "Congratulations!\n" + ChatColor.YELLOW + "Time: "
                   + this.messageFormatter
                   .formatTime(time));
-      event.getPlayer().teleport(this.spawn);
+      teleportToSpawn(event.getPlayer());
 
     }
 
@@ -227,6 +232,11 @@ public final class RaceTrackerImpl implements RaceTracker {
 
   }
 
+  private void teleportToSpawn(Player player) {
+    player.getInventory().setChestplate(new ItemStack(Material.AIR));
+    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.teleport(this.spawn), 5L);
+  }
+
   @EventHandler
   public void onFall(PlayerMoveEvent event) {
     if (event.getTo() == null || event.getFrom().toVector().equals(event.getTo().toVector())) {
@@ -243,7 +253,7 @@ public final class RaceTrackerImpl implements RaceTracker {
     if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType()
         != Material.AIR) {
       this.endRace(player.getUniqueId());
-      player.teleport(this.spawn);
+      teleportToSpawn(event.getPlayer());
     }
   }
 
@@ -257,6 +267,6 @@ public final class RaceTrackerImpl implements RaceTracker {
       event.setCancelled(true);
     }
 
-
   }
+
 }

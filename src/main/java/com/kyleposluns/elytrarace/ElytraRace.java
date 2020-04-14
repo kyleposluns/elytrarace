@@ -8,6 +8,7 @@ import com.kyleposluns.elytrarace.command.RaceCommand;
 import com.kyleposluns.elytrarace.command.StopRaceCommand;
 import com.kyleposluns.elytrarace.config.ERConfig;
 import com.kyleposluns.elytrarace.database.ElytraDatabase;
+import com.kyleposluns.elytrarace.game.PlayerConnectionHandler;
 import com.kyleposluns.elytrarace.game.RaceCoordinator;
 import com.kyleposluns.elytrarace.game.RaceCoordinatorImpl;
 import org.bukkit.command.PluginCommand;
@@ -58,6 +59,8 @@ public class ElytraRace extends JavaPlugin {
           .setExecutor(new LeaderboardCommand(messageFormatter, leaderboardCommand.getUsage(),
               this.arenaManager));
     }
+    this.getServer().getPluginManager()
+        .registerEvents(new PlayerConnectionHandler(this.raceCoordinator), this);
 
   }
 

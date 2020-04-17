@@ -14,5 +14,8 @@ commands:
     description: List the arenas.
     usage: /<command>
   leaderboard:
-    description: List the arenas.
+    description: List the records on an area.
+    usage: /<command> <arena>
+  prs:
+    description: List your personal records on an arena.
     usage: /<command> <arena>

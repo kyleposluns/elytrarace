@@ -18,10 +18,9 @@ public interface ArenaManager {
   /**
    * Find an arena by name
    * @param arenaName The name of the arena.
-   * @return The arena.
-   * @throws IllegalArgumentException If the arena doesn't exist.
+   * @return The arena or null if it doesn't exit.
    */
-  Arena getArena(String arenaName) throws IllegalArgumentException;
+  Arena getArena(String arenaName);
 
 
   RaceTracker getRaceTracker(String arena);
@@ -31,6 +30,8 @@ public interface ArenaManager {
    * @return The arena names.
    */
   List<String> getLoadedArenas();
+
+  List<String> getArenaDisplayNames();
 
 
 }

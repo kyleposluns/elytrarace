@@ -4,7 +4,6 @@ import com.kyleposluns.elytrarace.tracking.RaceTracker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ArenaManagerImpl implements ArenaManager {
@@ -21,9 +20,8 @@ public class ArenaManagerImpl implements ArenaManager {
   }
 
   @Override
-  public Arena getArena(String arenaName) throws IllegalArgumentException {
-    return Optional.of(this.arenas.get(arenaName)).orElseThrow(() -> new IllegalArgumentException(
-        String.format("Could not find the arena: \"%s.\"", arenaName)));
+  public Arena getArena(String arenaName) {
+    return this.arenas.get(arenaName);
   }
 
   @Override
@@ -40,5 +38,11 @@ public class ArenaManagerImpl implements ArenaManager {
   @Override
   public List<String> getLoadedArenas() {
     return new ArrayList<>(arenas.keySet());
+  }
+
+  @Override
+  public List<String> getArenaDisplayNames() {
+    return this.arenas.values().stream().map(Arena::getDisplayName)
+        .collect(Collectors.toList());
   }
 }

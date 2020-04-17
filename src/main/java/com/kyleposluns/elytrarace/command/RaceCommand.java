@@ -21,10 +21,15 @@ public class RaceCommand extends AbstractCommand {
       return;
     }
 
+    if (this.raceCoordinator.isRacing(player.getUniqueId())) {
+      this.raceCoordinator.stopTracking(player.getUniqueId());
+      success(player, "Stopping current race.");
+    }
+
     String arena = args[0].toLowerCase();
     try {
       raceCoordinator.beginTracking(player.getUniqueId(), arena);
-      success(player, String.format("Begin a race on %s!", arena));
+      success(player, String.format("Beginning a race on %s!", arena));
     } catch (Exception e) {
       e.printStackTrace();
       failure(player, "There was an issue starting the race!\n" + e.getMessage());

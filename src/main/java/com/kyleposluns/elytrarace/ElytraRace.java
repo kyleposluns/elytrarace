@@ -4,6 +4,7 @@ package com.kyleposluns.elytrarace;
 import com.kyleposluns.elytrarace.arena.ArenaManager;
 import com.kyleposluns.elytrarace.command.ArenasCommand;
 import com.kyleposluns.elytrarace.command.LeaderboardCommand;
+import com.kyleposluns.elytrarace.command.PersonalRecordCommand;
 import com.kyleposluns.elytrarace.command.RaceCommand;
 import com.kyleposluns.elytrarace.command.StopRaceCommand;
 import com.kyleposluns.elytrarace.config.ERConfig;
@@ -59,6 +60,14 @@ public class ElytraRace extends JavaPlugin {
           .setExecutor(new LeaderboardCommand(messageFormatter, leaderboardCommand.getUsage(),
               this.arenaManager));
     }
+
+    PluginCommand prsCommand = this.getCommand("prs");
+    if (prsCommand != null) {
+      prsCommand
+          .setExecutor(new PersonalRecordCommand(messageFormatter, prsCommand.getUsage(),
+              this.arenaManager));
+    }
+
     this.getServer().getPluginManager()
         .registerEvents(new PlayerConnectionHandler(this.raceCoordinator), this);
 

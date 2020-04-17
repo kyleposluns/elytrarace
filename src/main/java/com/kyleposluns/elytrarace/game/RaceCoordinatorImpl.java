@@ -52,6 +52,11 @@ public class RaceCoordinatorImpl implements RaceCoordinator {
   }
 
   @Override
+  public boolean isRacing(UUID playerId) {
+    return playerArenaMap.containsKey(playerId);
+  }
+
+  @Override
   public void stopTracking(UUID playerId) {
     if (this.playerArenaMap.containsKey(playerId)) {
       this.arenaManager.getRaceTracker(this.playerArenaMap.get(playerId)).unTrack(playerId);

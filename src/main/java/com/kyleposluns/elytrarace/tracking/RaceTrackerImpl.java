@@ -16,10 +16,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -70,10 +72,7 @@ public final class RaceTrackerImpl implements RaceTracker {
     this.arenaId = arenaId;
     this.database = database;
     this.path = path;
-   /* this.checkpointParticles = areas.stream()
-        .filter(area -> area.getType() == AreaType.CHECKPOINT)
-        .flatMap(area -> area.visitArea(new DrawOutline()).stream()).collect(
-            Collectors.toList());*/
+
     this.players = new HashSet<>();
     this.playerParticleThreadManager = new PlayerParticleThreadManagerImpl(plugin, 0L, 5L, 1);
     this.checkpointTracker = new CheckpointTrackerImpl(
@@ -91,7 +90,6 @@ public final class RaceTrackerImpl implements RaceTracker {
       meta.setUnbreakable(true);
       this.elytra.setItemMeta(meta);
     }
-
   }
 
 

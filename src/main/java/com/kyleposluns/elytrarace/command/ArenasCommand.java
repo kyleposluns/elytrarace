@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class ArenasCommand extends AbstractCommand {
 
-  private ArenaManager arenaManager;
+  private final ArenaManager arenaManager;
 
   public ArenasCommand(MessageFormatter formatter, String usage, ArenaManager arenaManager) {
     super(formatter, usage);
@@ -21,6 +21,6 @@ public class ArenasCommand extends AbstractCommand {
       return;
     }
 
-    this.messageFormatter.sendListMessage(player, "Available Arenas", this.arenaManager.getLoadedArenas());
+    this.messageFormatter.sendListMessage(player, "Available Arenas", this.arenaManager.getArenaDisplayNames());
   }
 }

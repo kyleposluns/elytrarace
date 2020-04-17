@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 /**
  * Responsible for managing which races players are in.
  */
-public interface RaceCoordinator extends Listener {
+public interface RaceCoordinator {
 
   /**
    * Assign a player to an arena to be tracked by its RaceTracker.
@@ -25,6 +25,9 @@ public interface RaceCoordinator extends Listener {
    * @throws IllegalArgumentException If the player isn't being tracked by any arena.
    */
   Arena getCurrentArena(UUID playerId) throws IllegalArgumentException;
+
+
+  boolean isRacing(UUID playerId);
 
   /**
    * Stops tracking the player no matter which arena they're in. This is a No-op if the player is
